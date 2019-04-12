@@ -1,6 +1,6 @@
 package main
 
 
-var LightningDir string = "/home/jnetti/.lightning/demo/1/"
+var LightningDir string = "/full/path/to/lightning/dir/"  // <-- end in backslash. Do not use ~/
 
 
