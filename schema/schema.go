@@ -6,7 +6,7 @@ import (
 	"github.com/niftynei/glightning/glightning"
 )
 
-type NodeInfo struct {
+type NodeInfo_ql struct {
 	Id                         string            `json:"id"`
 	Alias                      string            `json:"alias"`
 	Color                      string            `json:"color"`
@@ -22,7 +22,7 @@ type NodeInfo struct {
 	FeesCollectedMilliSatoshis string            `json:"msatoshi_fees_collected"` //graphql protocol cannot handle uint64, so turn in into string
 }
 
-var nodeType = graphql.NewObject(
+var nodeinfoType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "NodeInfo",
 		Fields: graphql.Fields {
@@ -61,6 +61,32 @@ var nodeType = graphql.NewObject(
 			},
 			"feesCollectedMilliSatoshis": &graphql.Field {
 				Type: graphql.String,
+			},
+		},
+	},
+)
+
+var nodeType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Node",
+		Fields: graphql.Fields {
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"alias": &graphql.Field {
+				Type: graphql.String,
+			},
+			"color": &graphql.Field {
+				Type: graphql.String,
+			},
+			"lastTimestamp": &graphql.Field {
+				Type: graphql.NewNonNull(graphql.Int),
+			},
+			"globalFeatures": &graphql.Field {
+				Type: graphql.String,
+			},
+			"addresses": &graphql.Field {
+				Type: graphql.NewList(addressType),
 			},
 		},
 	},
@@ -114,9 +140,14 @@ var addressInternalType = graphql.NewObject(
 func BuildSchema() graphql.Schema {
 	fields := graphql.Fields{
                 "getinfo": &graphql.Field {
-			Type:  nodeType,
+			Type:  nodeinfoType,
 			Description: "Get my node info",
 			Resolve: r_getinfo,
+		},
+		"listnodes": &graphql.Field {
+			Type: graphql.NewList(nodeType),
+			Description: "Get a list of all nodes seen in network though channels and node announcement messages",
+			Resolve: r_listnodes,
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
