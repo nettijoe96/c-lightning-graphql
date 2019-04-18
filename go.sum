@@ -1,0 +1,8 @@
+github.com/graphql-go/graphql v0.7.8 h1:769CR/2JNAhLG9+aa8pfLkKdR0H+r5lsQqling5WwpU=
+github.com/graphql-go/graphql v0.7.8/go.mod h1:k6yrAYQaSP59DC5UVxbgxESlmVyojThKdORUqGDGmrI=
+github.com/graphql-go/handler v0.2.3 h1:CANh8WPnl5M9uA25c2GBhPqJhE53Fg0Iue/fRNla71E=
+github.com/graphql-go/handler v0.2.3/go.mod h1:leLF6RpV5uZMN1CdImAxuiayrYYhOk33bZciaUGaXeU=
+github.com/nettijoe96/c-lightning-api v0.0.0-20190416190914-294f9c628cbe h1:iKkOm+8tcLSxSnyvbwaCgf1G4nZoaEc+s0sGgx0m7QM=
+github.com/nettijoe96/c-lightning-api v0.0.0-20190416190914-294f9c628cbe/go.mod h1:O9eEuANWH9mcC6KONY9ftT7Ob5EXrTdr83O/s+H8I9M=
+github.com/niftynei/glightning v0.0.0-20190331052231-45de0550b80a h1:dBrDfm1oNcWfU184sJnuk9DffBXGR4dKH7sBbq8+XDk=
+github.com/niftynei/glightning v0.0.0-20190331052231-45de0550b80a/go.mod h1:nOHtsM1ZfMwOxwl6LE72U611ozP+IBj/xVkJ+9vwtd4=
