@@ -147,6 +147,13 @@ func BuildSchema() graphql.Schema {
 		"listnodes": &graphql.Field {
 			Type: graphql.NewList(nodeType),
 			Description: "Get a list of all nodes seen in network though channels and node announcement messages",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+			                Type: graphql.String,
+				        DefaultValue: "",
+				        Description: "Id for listnodes query. '' is all nodes.",
+				},
+			},
 			Resolve: r_listnodes,
 		},
 	}

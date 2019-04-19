@@ -4,6 +4,7 @@ package main
 import (
 	"github.com/nettijoe96/c-lightning-api/plugin"
 	"github.com/nettijoe96/c-lightning-api/lightning"
+	//"lightning"
 	"github.com/nettijoe96/c-lightning-api/schema"
 	"github.com/graphql-go/handler"
 	"net/http"

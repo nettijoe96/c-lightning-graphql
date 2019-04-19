@@ -5,6 +5,7 @@ import (
 	"github.com/nettijoe96/c-lightning-api/lightning"
 	"github.com/niftynei/glightning/glightning"
 	"strconv"
+	"errors"
 )
 
 func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
@@ -15,17 +16,18 @@ func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
         return nodeinfo, err
 }
 
-
 func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
+	var lstNode []glightning.Node
+        var err error
         l := lightning.GetGlobalLightning()
-	lstNode, err := l.ListNodes()
-	//var lstNodeInfo_ql []NodeInfo_ql //TODO: need sizeof
-	//TODO: set each element to a list with following properties as below
-	//for i, n := range lstNodeInfo {
-	//        var nodeinfo_ql *NodeInfo_ql = &NodeInfo_ql{}
-	//	lstNodeInfo_ql = append(lstNodeInfo_ql, n)
-        //}
-
+	id, idPassed := p.Args["id"];
+	if !idPassed {
+		errors.New("Cannot find id in mapping.")
+	} else if id.(string) == "" {
+                lstNode, err = l.ListNodes()
+	}else{
+		lstNode, err = l.GetNode(id.(string))
+	}
         return lstNode, err
 }
 

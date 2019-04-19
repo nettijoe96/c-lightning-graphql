@@ -9,7 +9,7 @@ to run (must be already running bitcoind and c-lightning for backend):
 
 3. set LightningDir in config.go to full path.
 
-4. `go build -o c-lightning-api *.go`
+4. `go build -o c-lightning-api`
 
 5. `./c-lightning-api`
 
