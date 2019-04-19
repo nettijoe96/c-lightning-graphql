@@ -3,24 +3,8 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/niftynei/glightning/glightning"
+//	"github.com/niftynei/glightning/glightning"
 )
-
-type NodeInfo_ql struct {
-	Id                         string            `json:"id"`
-	Alias                      string            `json:"alias"`
-	Color                      string            `json:"color"`
-	PeerCount                  int               `json:"num_peers"`
-	PendingChannelCount        int               `json:"num_pending_channels"`
-	ActiveChannelCount         int               `json:"num_active_channels"`
-	InactiveChannelCount       int               `json:"num_inactive_channels"`
-	Addresses                  []glightning.Address         `json:"address"`
-	Binding                    []glightning.AddressInternal `json:"binding"`
-	Version                    string            `json:"version"`
-	Blockheight                int               `json:"blockheight"`
-	Network                    string            `json:"network"`
-	FeesCollectedMilliSatoshis string            `json:"msatoshi_fees_collected"` //graphql protocol cannot handle uint64, so turn in into string
-}
 
 var nodeinfoType = graphql.NewObject(
 	graphql.ObjectConfig{
@@ -137,9 +121,212 @@ var addressInternalType = graphql.NewObject(
 )
 
 
+var peerType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "Peer",
+		Fields: graphql.Fields {
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"connected": &graphql.Field {
+				Type: graphql.Boolean,
+			},
+			"netAddresses": &graphql.Field {
+				Type: graphql.NewList(graphql.String),
+			},
+			"globalFeatures": &graphql.Field {
+				Type: graphql.String,
+			},
+			"localFeatures": &graphql.Field {
+				Type: graphql.String,
+			},
+			"channels": &graphql.Field {
+				Type: graphql.NewList(peerChannelType),
+			},
+			"logs": &graphql.Field {
+				Type: graphql.NewList(logType),
+			},
+		},
+	},
+)
+
+var peerChannelType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "peer channel",
+		Fields: graphql.Fields {
+			"state": &graphql.Field {
+				Type: graphql.String,
+			},
+			"scratchTxId": &graphql.Field {
+                                Type: graphql.String,
+			},
+			"owner": &graphql.Field {
+				Type: graphql.String,
+			},
+			"shortChannelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"channelDirection": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"channelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"fundingTxId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"funding": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.NewList(graphql.String),
+			},
+			"private": &graphql.Field {
+				Type: graphql.Boolean,
+			},
+			"fundingAllocations": &graphql.Field {
+				Type: graphql.NewList(fundingAllocationType),
+			},
+			"milliSatoshiToUs": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiToUsMin": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiToUsMax": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiTotal": &graphql.Field {
+				Type: graphql.String,
+			},
+			"dustLimitSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"maxHtlcValueInFlightMilliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"theirChannelReserveSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"ourChannelReserveSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"spendableMilliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"htlcMinMilliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"theirToSelfDelay": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"ourToSelfDelay": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"maxAcceptedHtlcs": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"inPaymentsOffered": &graphql.Field {
+				Type: graphql.String,
+			},
+			"inMilliSatoshiOffered": &graphql.Field {
+				Type: graphql.String,
+			},
+			"inPaymentsFulfilled": &graphql.Field {
+				Type: graphql.String,
+			},
+			"inMilliSatoshiFulfilled": &graphql.Field {
+				Type: graphql.String,
+			},
+			"outPaymentOffered": &graphql.Field {
+				Type: graphql.String,
+			},
+			"outMilliSatoshiOffered": &graphql.Field {
+				Type: graphql.String,
+			},
+			"outPaymentsFulfilled": &graphql.Field {
+				Type: graphql.String,
+			},
+			"outMilliSatoshiFulfilled": &graphql.Field {
+				Type: graphql.String,
+			},
+			"htlcs": &graphql.Field {
+				Type: graphql.NewList(htlcType),
+			},
+		},
+	},
+)
+
+
+var fundingAllocationType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "funding allocation",
+		Fields: graphql.Fields {
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"msat": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+
+
+var logType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "Log",
+		Fields: graphql.Fields {
+			"type": &graphql.Field {
+				Type: graphql.String,
+			},
+			"time": &graphql.Field {
+				Type: graphql.String,
+			},
+			"source": &graphql.Field {
+				Type: graphql.String,
+			},
+			"message": &graphql.Field {
+				Type: graphql.String,
+			},
+			"numSkipped": &graphql.Field {
+				Type: graphql.Int,
+			},
+		},
+	},
+)
+
+
+var htlcType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "htlc type",
+		Fields: graphql.Fields {
+			"direction": &graphql.Field {
+				Type: graphql.String,
+			},
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"expiry": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paymentHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"state": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+
+
 func BuildSchema() graphql.Schema {
-	fields := graphql.Fields{
-                "getinfo": &graphql.Field {
+	fields := graphql.Fields {
+		"getinfo": &graphql.Field {
 			Type:  nodeinfoType,
 			Description: "Get my node info",
 			Resolve: r_getinfo,
@@ -149,18 +336,35 @@ func BuildSchema() graphql.Schema {
 			Description: "Get a list of all nodes seen in network though channels and node announcement messages",
 			Args: graphql.FieldConfigArgument {
 				"id": &graphql.ArgumentConfig {
-			                Type: graphql.String,
-				        DefaultValue: "",
-				        Description: "Id for listnodes query. '' is all nodes.",
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "Id for listnodes query. '' is all nodes.",
 				},
 			},
 			Resolve: r_listnodes,
+		},
+                "listpeers": &graphql.Field {
+			Type:  graphql.NewList(peerType),
+			Description: "List peers",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "Id for listpeers query. '' is all peers.",
+				},
+				"level": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "choose level of logs",
+				},
+			},
+			Resolve: r_listpeers,
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
 	schema, _ := graphql.NewSchema(schemaConfig)
-	return schema
+        return schema
 }
 
 
