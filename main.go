@@ -3,26 +3,13 @@ package main
 
 import (
 	"github.com/nettijoe96/c-lightning-api/plugin"
-	"github.com/nettijoe96/c-lightning-api/lightning"
-	//"lightning"
-	"github.com/nettijoe96/c-lightning-api/schema"
-	"github.com/graphql-go/handler"
-	"net/http"
+	"os"
 )
 
 
 func main() {
-	l := lightning.GetGlobalLightning()
-	l.StartUp("lightning-rpc", LightningDir)
-        s := schema.BuildSchema()
-	h := handler.New(&handler.Config{
-		Schema: &s,
-		Pretty: true,
-		GraphiQL: true,
-	})
-        http.Handle("/graphql", h)
-	http.ListenAndServe(":10000", nil)
-	plugin := plugin.StartPlugin()
-	_ = plugin
+	plugin.Init()
+	p := plugin.GetGlobalPlugin()
+	p.Start(os.Stdin, os.Stdout)
 }
 

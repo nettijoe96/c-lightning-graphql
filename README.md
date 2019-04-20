@@ -1,7 +1,7 @@
 graphql api for c-lightning. 
 
 
-to run (must be already running bitcoind and c-lightning for backend):
+to run (must be already running bitcoind for backend):
 
 1. Must have Go version >= 11
 
@@ -11,5 +11,9 @@ to run (must be already running bitcoind and c-lightning for backend):
 
 4. `go build -o c-lightning-api`
 
-5. `./c-lightning-api`
+5. `ln -s c-lightning-api <path to c-lightning source>/plugins/c-lightning-api`
+
+6.  `./lightningd --graphql-port= <port> --graphql-page=<page>`
+
+7. `./lightning-cli graphql`
 

@@ -6,8 +6,10 @@ import (
 
 var lightning *glightning.Lightning = glightning.NewLightning()
 
+
 func GetGlobalLightning() *glightning.Lightning {
 	return lightning
 }
+
 
 

@@ -3,7 +3,6 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-//	"github.com/niftynei/glightning/glightning"
 )
 
 var nodeinfoType = graphql.NewObject(
