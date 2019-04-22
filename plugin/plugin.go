@@ -9,7 +9,6 @@ import (
 	"github.com/niftynei/glightning/jrpc2"
 	"log"
 	"net/http"
-	"time"
 )
 
 var plugin *glightning.Plugin
@@ -80,10 +79,7 @@ func (api *StartApi) Standalone(port, page string) (jrpc2.Result, error) {
 		GraphiQL: true,
 	})
         http.Handle("/" + page, h)
-	go http.ListenAndServe(":" + port, nil)
-	for {
-	        time.Sleep(1)
-	}
+	http.ListenAndServe(":" + port, nil)
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
 }
 
