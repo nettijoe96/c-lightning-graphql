@@ -323,6 +323,73 @@ var htlcType = graphql.NewObject(
 )
 
 
+var invoiceType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "invoice type",
+		Fields: graphql.Fields {
+			"paymentHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"expiresAt": &graphql.Field {
+				Type: graphql.String,
+			},
+			"bolt11": &graphql.Field {
+				Type: graphql.String,
+			},
+			"warningOffline": &graphql.Field {
+				Type: graphql.String,
+			},
+			"warningCapacity": &graphql.Field {
+				Type: graphql.String,
+			},
+			"label": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.String,
+			},
+			"description": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+
+
+var payRequestType = graphql.NewObject(
+	graphql.ObjectConfig {
+	        Name: "pay request type",
+		Fields: graphql.Fields {
+			"bolt11": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"desc": &graphql.Field {
+				Type: graphql.String,
+			},
+			"RiskFactor": &graphql.Field {
+				Type: graphql.Float,
+			},
+			"maxFeePercent": &graphql.Field {
+				Type: graphql.Float,
+			},
+			"retryFor": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"maxDelay": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"exemptFee": &graphql.Field {
+				Type: graphql.Boolean,
+			},
+		},
+	},
+)
+
+
+
 func BuildSchema() graphql.Schema {
 	fields := graphql.Fields {
 		"getinfo": &graphql.Field {
@@ -358,6 +425,18 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: r_listpeers,
+		},
+		"listinvoices": &graphql.Field {
+			Type: graphql.NewList(invoiceType),
+			Description: "List invoices",
+			Args: graphql.FieldConfigArgument {
+				"label": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "list invoices. Opional label argument",
+				},
+			},
+			Resolve: r_listinvoices,
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
