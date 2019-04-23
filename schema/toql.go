@@ -7,7 +7,6 @@ import (
 )
 
 
-
 func peerToql(peer glightning.Peer) Peer_ql {
         var ql Peer_ql
 	ql.Id = peer.Id
@@ -105,4 +104,63 @@ func nodeToNodeInfo(nodeinfo *glightning.NodeInfo, nodeinfo_ql *NodeInfo_ql) {
 	nodeinfo_ql.Network = nodeinfo.Network
 	nodeinfo_ql.FeesCollectedMilliSatoshis = strconv.FormatUint(nodeinfo.FeesCollectedMilliSatoshis, 10)
 }
+
+
+//mutation related
+
+func paymentSuccessToql(paymentSuccess glightning.PaymentSuccess) PaymentSuccess_ql {
+        var ql PaymentSuccess_ql
+	ql.PaymentFields_ql = paymentFieldsToql(paymentSuccess.PaymentFields)
+	ql.GetRouteTries = paymentSuccess.GetRouteTries
+	ql.SendPayTries = paymentSuccess.SendPayTries
+	for _, routeHop := range paymentSuccess.Route {
+	        ql.Route = append(ql.Route, routeHopToql(routeHop))
+	}
+	for _, failure := range paymentSuccess.Failures {
+		ql.Failures = append(ql.Failures, payFailureToql(failure))
+	}
+        return ql
+}
+
+
+func paymentFieldsToql(paymentFields glightning.PaymentFields) PaymentFields_ql {
+	var ql PaymentFields_ql
+	ql.Id = strconv.FormatUint(paymentFields.Id, 10)
+	ql.PaymentHash = paymentFields.PaymentHash
+	ql.Destination = paymentFields.Destination
+	ql.MilliSatoshi = strconv.FormatUint(paymentFields.MilliSatoshi, 10)
+	ql.MilliSatoshiSent = strconv.FormatUint(paymentFields.MilliSatoshiSent, 10)
+	ql.CreatedAt = strconv.FormatUint(paymentFields.CreatedAt, 10)
+	ql.Status = paymentFields.Status
+	ql.PaymentPreimage = paymentFields.PaymentPreimage
+	ql.Description = paymentFields.Description
+	return ql
+}
+
+func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
+	var ql PayFailure_ql
+	ql.Message = payFailure.Message
+	ql.Type = payFailure.Type
+	ql.OnionReply = payFailure.OnionReply
+	ql.ErringIndex = payFailure.ErringIndex
+	ql.FailCode = payFailure.FailCode
+	ql.ErringNode = payFailure.ErringNode
+	ql.ErringChannel = payFailure.ErringChannel
+	ql.ChannelUpdate = payFailure.ChannelUpdate
+	for _, routeHop := range payFailure.Route {
+		ql.Route = append(ql.Route, routeHopToql(routeHop))
+	}
+        return ql
+}
+
+func routeHopToql(routeHop glightning.RouteHop) RouteHop_ql {
+	var ql RouteHop_ql
+	ql.Id = routeHop.Id
+	ql.ShortChannelId = routeHop.ShortChannelId
+	ql.MilliSatoshi = strconv.FormatUint(routeHop.MilliSatoshi, 10)
+	ql.Delay = routeHop.Delay
+	return ql
+}
+
+
 

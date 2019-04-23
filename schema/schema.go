@@ -151,7 +151,7 @@ var peerType = graphql.NewObject(
 
 var peerChannelType = graphql.NewObject(
 	graphql.ObjectConfig {
-		Name: "peer channel",
+		Name: "peerChannel",
 		Fields: graphql.Fields {
 			"state": &graphql.Field {
 				Type: graphql.String,
@@ -256,10 +256,9 @@ var peerChannelType = graphql.NewObject(
 	},
 )
 
-
 var fundingAllocationType = graphql.NewObject(
 	graphql.ObjectConfig {
-		Name: "funding allocation",
+		Name: "fundingAllocation",
 		Fields: graphql.Fields {
 			"id": &graphql.Field {
 				Type: graphql.String,
@@ -274,7 +273,7 @@ var fundingAllocationType = graphql.NewObject(
 
 var logType = graphql.NewObject(
 	graphql.ObjectConfig {
-		Name: "Log",
+		Name: "log",
 		Fields: graphql.Fields {
 			"type": &graphql.Field {
 				Type: graphql.String,
@@ -298,7 +297,7 @@ var logType = graphql.NewObject(
 
 var htlcType = graphql.NewObject(
 	graphql.ObjectConfig {
-		Name: "htlc type",
+		Name: "htlc",
 		Fields: graphql.Fields {
 			"direction": &graphql.Field {
 				Type: graphql.String,
@@ -325,7 +324,7 @@ var htlcType = graphql.NewObject(
 
 var invoiceType = graphql.NewObject(
 	graphql.ObjectConfig {
-		Name: "invoice type",
+		Name: "invoice",
 		Fields: graphql.Fields {
 			"paymentHash": &graphql.Field {
 				Type: graphql.String,
@@ -358,7 +357,7 @@ var invoiceType = graphql.NewObject(
 
 var payRequestType = graphql.NewObject(
 	graphql.ObjectConfig {
-	        Name: "pay request type",
+	        Name: "payRequest",
 		Fields: graphql.Fields {
 			"bolt11": &graphql.Field {
 				Type: graphql.String,
@@ -388,10 +387,86 @@ var payRequestType = graphql.NewObject(
 	},
 )
 
+var paymentSuccessType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "paymentSuccess",
+		Fields: graphql.Fields {
+			"paymentFields": &graphql.Field {
+				Type: graphql.String,
+			},
+			"getRouteTries": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"sendPayTries": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"route": &graphql.Field {
+				Type: graphql.NewList(routeHopType),
+			},
+			"failures": &graphql.Field {
+				Type: graphql.NewList(payFailureType),
+			},
+		},
+	},
+)
+
+
+var payFailureType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "payFailure",
+		Fields: graphql.Fields {
+			"message": &graphql.Field {
+				Type: graphql.String,
+			},
+			"type": &graphql.Field {
+				Type: graphql.String,
+			},
+			"onionReply": &graphql.Field {
+				Type: graphql.String,
+			},
+			"erringIndex": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"failCode": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"erringNode": &graphql.Field {
+				Type: graphql.String,
+			},
+			"channelUpdate": &graphql.Field {
+				Type: graphql.String,
+			},
+			"route": &graphql.Field {
+				Type: graphql.NewList(routeHopType),
+			},
+		},
+	},
+)
+
+
+var routeHopType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "routeHop",
+		Fields: graphql.Fields {
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"shortChannelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"delay": &graphql.Field {
+				Type: graphql.Int,
+			},
+		},
+	},
+)
 
 
 func BuildSchema() graphql.Schema {
-	fields := graphql.Fields {
+	queryFields := graphql.Fields {
 		"getinfo": &graphql.Field {
 			Type:  nodeinfoType,
 			Description: "Get my node info",
@@ -439,8 +514,22 @@ func BuildSchema() graphql.Schema {
 			Resolve: r_listinvoices,
 		},
 	}
-	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
-	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	mutationFields := graphql.Fields {
+		"pay": &graphql.Field {
+			Type: paymentSuccessType,
+			Description: "Pay via bolt11 as argument",
+			Args: graphql.FieldConfigArgument {
+				"bolt11": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String), //non null means that argument is required
+					Description: "full bolt11 invoice to pay to",
+				},
+			},
+			Resolve: r_pay,
+		},
+	}
+	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
+	mutations := graphql.ObjectConfig{Name: "Mutation", Fields: mutationFields}
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery), Mutation: graphql.NewObject(mutations)}
 	schema, _ := graphql.NewSchema(schemaConfig)
         return schema
 }

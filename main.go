@@ -16,7 +16,7 @@ func main() {
 	    p.Start(os.Stdin, os.Stdout)
 	}else{
 	    var api *plugin.StartApi
-	    api.Standalone("9043", "graphql")
+	    api.Standalone("9043", "graphql", LightningDir)
         }
 }
 

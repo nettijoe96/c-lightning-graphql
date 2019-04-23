@@ -105,4 +105,43 @@ type Invoice_ql struct {
 	Description     string `json:"description"`
 }
 
+type RouteHop_ql struct {
+	Id              string
+	ShortChannelId  string
+	MilliSatoshi    string  // uint64
+	Delay           uint
+}
+
+type PaymentSuccess_ql struct {
+	PaymentFields_ql
+	GetRouteTries int          `json:"getroute_tries"`
+	SendPayTries  int          `json:"sendpay_tries"`
+	Route         []RouteHop_ql   `json:"route"`
+	Failures      []PayFailure_ql `json:"failures"`
+}
+
+type PayFailure_ql struct {
+	Message       string     `json:"message"`
+	Type          string     `json:"type"`
+	OnionReply    string     `json:"onionreply"`
+	ErringIndex   int        `json:"erring_index"`
+	FailCode      int        `json:"failcode"`
+	ErringNode    string     `json:"erring_node"`
+	ErringChannel string     `json:"erring_channel"`
+	ChannelUpdate string     `json:"channel_update"`
+	Route         []RouteHop_ql `json:"route"`
+}
+
+type PaymentFields_ql struct {
+	Id               string `json:"id"`             //uint64
+	PaymentHash      string `json:"payment_hash"`
+	Destination      string `json:"destination"`
+	MilliSatoshi     string `json:"msatoshi"`       //uint64
+	MilliSatoshiSent string `json:"msatoshi_sent"`  //uint64
+	CreatedAt        string `json:"created_at"`     //uint64
+	Status           string `json:"status"`
+	PaymentPreimage  string `json:"payment_preimage"`
+	Description      string `json:"description"`
+}
+
 

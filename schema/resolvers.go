@@ -86,4 +86,20 @@ func r_listpeers(p graphql.ResolveParams) (interface{}, error) {
 	return lstPeer_ql, err
 }
 
+//Mutations
+
+func r_pay(p graphql.ResolveParams) (interface{}, error) {
+        var paymentSuccess *glightning.PaymentSuccess
+	var paymentSuccess_ql PaymentSuccess_ql
+        var err error
+	l := lightning.GetGlobalLightning()
+	bolt11, isBolt11 := p.Args["bolt11"]
+	if !isBolt11 {
+		err = errors.New("Cannot find id in mapping.")
+	}else{
+		paymentSuccess, err = l.PayBolt(bolt11.(string))
+	}
+	paymentSuccess_ql = paymentSuccessToql(*paymentSuccess)
+	return paymentSuccess_ql, err
+}
 

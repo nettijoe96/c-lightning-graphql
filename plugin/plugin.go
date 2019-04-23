@@ -9,6 +9,7 @@ import (
 	"github.com/niftynei/glightning/jrpc2"
 	"log"
 	"net/http"
+	"time"
 )
 
 var plugin *glightning.Plugin
@@ -31,7 +32,7 @@ func Init() {
 
 func InitFunc(p *glightning.Plugin, o map[string]string, config *glightning.Config) {
 	l := lightning.GetGlobalLightning()
-	l.StartUp(config.RpcFile, config.LightningDir)
+	l.StartUp(config.RpcFile, config.LightningDir) //TODO maybe it isn't looking at config?
 }
 
 func OnConnect(c *glightning.ConnectEvent) {
@@ -71,7 +72,9 @@ func (api *StartApi) Call() (jrpc2.Result, error) {
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
 }
 
-func (api *StartApi) Standalone(port, page string) (jrpc2.Result, error) {
+func (api *StartApi) Standalone(port, page, lightningDir string) (jrpc2.Result, error) {
+	l := lightning.GetGlobalLightning()
+	l.StartUp("lightning-rpc", lightningDir)
         s := schema.BuildSchema()
 	h := handler.New(&handler.Config{
 		Schema: &s,
@@ -79,7 +82,10 @@ func (api *StartApi) Standalone(port, page string) (jrpc2.Result, error) {
 		GraphiQL: true,
 	})
         http.Handle("/" + page, h)
-	http.ListenAndServe(":" + port, nil)
+	go http.ListenAndServe(":" + port, nil)
+	for {
+		time.Sleep(1)
+	}
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
 }
 
