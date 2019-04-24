@@ -9,7 +9,7 @@ import (
 	"github.com/niftynei/glightning/jrpc2"
 	"log"
 	"net/http"
-	"time"
+	"strconv"
 )
 
 var plugin *glightning.Plugin
@@ -22,8 +22,11 @@ func GetGlobalPlugin() *glightning.Plugin {
 
 func Init() {
 	plugin = glightning.NewPlugin(InitFunc)
-	plugin.RegisterOption(glightning.NewOption("graphql-port", "port api is available on. default: 9042", "9042"))
-	plugin.RegisterOption(glightning.NewOption("graphql-page", "page api is available on. default: graphql", "graphql"))
+	plugin.RegisterOption(glightning.NewOption("api-port", "port api is available on. default: 9042", "9042"))
+	plugin.RegisterOption(glightning.NewOption("api-page", "page api is available on. default: graphql", "graphql"))
+	plugin.RegisterOption(glightning.NewOption("api-certfile", "server certificate. User must approve this certificate. Required with -api-tls=true, which it is by default", "cert.pem"))
+	plugin.RegisterOption(glightning.NewOption("api-keyfile", "private key file of the public key in the server certificate. Required with -api-tls=true, which it is by default.", "key.pem"))
+	plugin.RegisterOption(glightning.NewOption("api-tls", "enable tls, default is enabled", "true"))
 	rpcStartApi := glightning.NewRpcMethod(&StartApi{}, "run lightning graphql api")
 	rpcStartApi.LongDesc = "run lightning graphql api on provided --port (default: 9042) and at --page (default: graphql). Access api at localhost:<port>/<page>/"
 	plugin.RegisterMethod(rpcStartApi)
@@ -61,6 +64,7 @@ func (api *StartApi) Name() string {
 func (api *StartApi) Call() (jrpc2.Result, error) {
 	var port string = plugin.GetOptionValue("graphql-port")
 	var page string = plugin.GetOptionValue("graphql-page")
+	isTLS, err := strconv.ParseBool(plugin.GetOptionValue("tls"))
         s := schema.BuildSchema()
 	h := handler.New(&handler.Config{
 		Schema: &s,
@@ -68,11 +72,17 @@ func (api *StartApi) Call() (jrpc2.Result, error) {
 		GraphiQL: true,
 	})
         http.Handle("/" + page, h)
-	go http.ListenAndServe(":" + port, nil)
-	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
+	if isTLS {
+	        var certfile string = plugin.GetOptionValue("certfile")
+	        var keyfile string = plugin.GetOptionValue("keyfile")
+	        go http.ListenAndServeTLS(":" + port, certfile, keyfile, nil)
+	}else{
+	        go http.ListenAndServe(":" + port, nil)
+	}
+	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), err
 }
 
-func (api *StartApi) Standalone(port, page, lightningDir string) (jrpc2.Result, error) {
+func (api *StartApi) Standalone(isTLS bool, port, page, certfile, keyfile, lightningDir string) (jrpc2.Result, error) {
 	l := lightning.GetGlobalLightning()
 	l.StartUp("lightning-rpc", lightningDir)
         s := schema.BuildSchema()
@@ -82,10 +92,12 @@ func (api *StartApi) Standalone(port, page, lightningDir string) (jrpc2.Result, 
 		GraphiQL: true,
 	})
         http.Handle("/" + page, h)
-	go http.ListenAndServe(":" + port, nil)
-	for {
-		time.Sleep(1)
+	if isTLS {
+	        http.ListenAndServeTLS(":" + port, certfile, keyfile, nil)
+	}else{
+	        http.ListenAndServe(":" + port, nil)
 	}
+
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
 }
 

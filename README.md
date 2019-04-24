@@ -3,7 +3,7 @@ graphql api for c-lightning.
 
 to run (must be already running bitcoind for backend):
 
-1. Must have Go version >= 11
+1. Must have Go version 12
 
 2. `git clone https://github.com/nettijoe96/c-lightning-api.git` (make sure it is outside gopath)
 

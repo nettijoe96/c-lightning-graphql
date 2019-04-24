@@ -95,7 +95,7 @@ func r_pay(p graphql.ResolveParams) (interface{}, error) {
 	l := lightning.GetGlobalLightning()
 	bolt11, isBolt11 := p.Args["bolt11"]
 	if !isBolt11 {
-		err = errors.New("Cannot find id in mapping.")
+		err = errors.New("Cannot find bolt11 in mapping.")
 	}else{
 		paymentSuccess, err = l.PayBolt(bolt11.(string))
 	}
