@@ -1,11 +1,15 @@
 package plugin
 
 import (
+	"context"
 	"fmt"
+	"encoding/json"
+	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"github.com/nettijoe96/c-lightning-api/auth"
+	"github.com/nettijoe96/c-lightning-api/lightning"
 	"github.com/nettijoe96/c-lightning-api/schema"
 	"github.com/niftynei/glightning/glightning"
-	"github.com/nettijoe96/c-lightning-api/lightning"
 	"github.com/niftynei/glightning/jrpc2"
 	"log"
 	"net/http"
@@ -91,7 +95,10 @@ func (api *StartApi) Standalone(isTLS bool, port, page, certfile, keyfile, light
 		Pretty: true,
 		GraphiQL: true,
 	})
-        http.Handle("/" + page, h)
+	//new
+	//graphqlHandler := graphqlHandler(s)
+	http.Handle("/" + page, auth.GetAuthHandler(h))
+
 	if isTLS {
 	        http.ListenAndServeTLS(":" + port, certfile, keyfile, nil)
 	}else{
@@ -101,6 +108,17 @@ func (api *StartApi) Standalone(isTLS bool, port, page, certfile, keyfile, light
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
 }
 
+//https://www.thepolyglotdeveloper.com/2018/07/jwt-authorization-graphql-api-using-golang/
+func graphqlHandler(schema graphql.Schema) http.Handler {
+	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
+		result := graphql.Do(graphql.Params {
+			Schema: schema,
+			RequestString: request.URL.Query().Get("query"), //TODO: do I need this?
+			Context: context.WithValue(context.Background(), "token", request.URL.Query()),
+		})
+		json.NewEncoder(response).Encode(result)
+	})
+}
 
 
 

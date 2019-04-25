@@ -472,7 +472,7 @@ func BuildSchema() graphql.Schema {
 			Type:  nodeinfoType,
 			Description: "Get my node info",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return auth.AuthWrapper(r_getinfo, p)
+				return auth.AuthWrapper(r_getinfo, auth.FundsAuth, p)
 			},
 		},
 		"listnodes": &graphql.Field {
