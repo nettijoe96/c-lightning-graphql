@@ -486,7 +486,10 @@ func BuildSchema() graphql.Schema {
 					Description: "Id for listnodes query. '' is all nodes.",
 				},
 			},
-			Resolve: r_listnodes,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listnodes, authLevels, p)
+			},
 		},
                 "listpeers": &graphql.Field {
 			Type:  graphql.NewList(peerType),
@@ -503,7 +506,10 @@ func BuildSchema() graphql.Schema {
 					Description: "choose level of logs",
 				},
 			},
-			Resolve: r_listpeers,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listpeers, authLevels, p)
+			},
 		},
 		"listinvoices": &graphql.Field {
 			Type: graphql.NewList(invoiceType),
@@ -515,7 +521,10 @@ func BuildSchema() graphql.Schema {
 					Description: "list invoices. Opional label argument",
 				},
 			},
-			Resolve: r_listinvoices,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listinvoices, authLevels, p)
+			},
 		},
 	}
 	mutationFields := graphql.Fields {
@@ -528,7 +537,10 @@ func BuildSchema() graphql.Schema {
 					Description: "full bolt11 invoice to pay to",
 				},
 			},
-			Resolve: r_pay,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.FundsAuth}
+				return auth.AuthWrapper(r_pay, authLevels, p)
+			},
 		},
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
