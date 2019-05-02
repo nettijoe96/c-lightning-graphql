@@ -21,7 +21,7 @@ func main() {
 	    var certfile string = flagMap["certfile"].(string)
 	    var keyfile string = flagMap["keyfile"].(string)
 	    var api *plugin.StartApi
-	    api.Standalone(isTLS, "9743", "graphql", certfile, keyfile, global.LightningDir)
+	    api.Standalone(isTLS, "9743", certfile, keyfile, global.LightningDir)
         }
 }
 

@@ -113,7 +113,7 @@ type RouteHop_ql struct {
 }
 
 type PaymentSuccess_ql struct {
-	PaymentFields_ql
+	PaymentFields PaymentFields_ql
 	GetRouteTries int          `json:"getroute_tries"`
 	SendPayTries  int          `json:"sendpay_tries"`
 	Route         []RouteHop_ql   `json:"route"`

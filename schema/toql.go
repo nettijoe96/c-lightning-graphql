@@ -110,7 +110,7 @@ func nodeToNodeInfo(nodeinfo *glightning.NodeInfo, nodeinfo_ql *NodeInfo_ql) {
 
 func paymentSuccessToql(paymentSuccess glightning.PaymentSuccess) PaymentSuccess_ql {
         var ql PaymentSuccess_ql
-	ql.PaymentFields_ql = paymentFieldsToql(paymentSuccess.PaymentFields)
+	ql.PaymentFields = paymentFieldsToql(paymentSuccess.PaymentFields)
 	ql.GetRouteTries = paymentSuccess.GetRouteTries
 	ql.SendPayTries = paymentSuccess.SendPayTries
 	for _, routeHop := range paymentSuccess.Route {
