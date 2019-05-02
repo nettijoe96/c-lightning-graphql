@@ -3,8 +3,49 @@ package schema
 
 import (
         "github.com/niftynei/glightning/glightning"
+	"github.com/pkg/errors"
         "strconv"
 )
+
+//feerates
+func feeRateEstimateToql(feeRateEstimate glightning.FeeRateEstimate) FeeRateEstimate_ql {
+	var ql FeeRateEstimate_ql
+	ql.Style = feeRateStyleToql(feeRateEstimate.Style)
+	ql.Details = feeRateEstimate.Details
+	var onchainEstimate_ql OnchainEstimate_ql = onchainEstimateToql(*feeRateEstimate.OnchainEstimate)
+	ql.OnchainEstimate = &onchainEstimate_ql
+	ql.Warning = feeRateEstimate.Warning
+	return ql
+}
+func qlToFeeRateStyle(feeRateStyle_ql FeeRateStyle_ql) (glightning.FeeRateStyle, error) {
+	var feeRateStyle glightning.FeeRateStyle
+	var err error
+	if feeRateStyle_ql == SatPerKiloByte {
+		feeRateStyle = 0
+	}else if feeRateStyle_ql == SatPerKiloSipa {
+		feeRateStyle = 1
+	}else{
+		err = errors.New("fee rate style must be perkb or perkw")
+	}
+	return feeRateStyle, err
+}
+func feeRateStyleToql(feeRateStyle glightning.FeeRateStyle) FeeRateStyle_ql {
+	var ql FeeRateStyle_ql
+	if feeRateStyle == 0 {
+		ql = SatPerKiloByte
+	}else{
+		ql = SatPerKiloSipa
+	}
+	return ql
+}
+func onchainEstimateToql(onchainEstimate glightning.OnchainEstimate) OnchainEstimate_ql {
+	var ql OnchainEstimate_ql
+	ql.OpeningChannelSatoshis = strconv.FormatUint(onchainEstimate.OpeningChannelSatoshis, 10)
+	ql.MutualCloseSatoshis = strconv.FormatUint(onchainEstimate.MutualCloseSatoshis, 10)
+	ql.UnilateralCloseSatoshis = strconv.FormatUint(onchainEstimate.UnilateralCloseSatoshis, 10)
+	return ql
+}
+//feerates ^^
 
 
 func peerToql(peer glightning.Peer) Peer_ql {

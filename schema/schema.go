@@ -6,6 +6,66 @@ import (
 	"github.com/nettijoe96/c-lightning-graphql/auth"
 )
 
+//feerates
+var feeRateEstimateType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "FeeRateEstimate",
+		Fields: graphql.Fields {
+			"style": &graphql.Field {
+				Type: graphql.String,
+			},
+			"details": &graphql.Field {
+				Type: feeRateDetailsType,
+			},
+			"onchainEstimate": &graphql.Field {
+				Type: onchainEstimateType,
+			},
+			"warning": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+var feeRateDetailsType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "FeeRateDetails",
+		Fields: graphql.Fields {
+			"urgent": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"normal": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"slow": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"minAcceptable": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"maxAcceptable": &graphql.Field {
+				Type: graphql.Int,
+			},
+		},
+	},
+)
+var onchainEstimateType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "OnchainEstimate",
+		Fields: graphql.Fields {
+			"openingChannelSatoshis": &graphql.Field {
+				Type: graphql.String,
+			},
+			"mutualCloseSatoshis": &graphql.Field {
+				Type: graphql.String,
+			},
+			"unilateralCloseSatoshis": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+
+
 var nodeinfoType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "NodeInfo",
@@ -501,14 +561,27 @@ var routeHopType = graphql.NewObject(
 	},
 )
 
-
 func BuildSchema() graphql.Schema {
 	queryFields := graphql.Fields {
+		"feerates": &graphql.Field {
+			Type: feeRateEstimateType,
+			Description: "Return feerate estimates, either satoshi-per-kw ({style} perkw) or satoshi-per-kb ({style} perkb).",
+			Args: graphql.FieldConfigArgument {
+				"style": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					Description: "either perkw for satoshi-per-kw or perkb for satoshi-per-kb",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_feerates, authLevels, p)
+			},
+		},
 		"getinfo": &graphql.Field {
 			Type:  nodeinfoType,
 			Description: "Get my node info",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.FundsAuth}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
 				return auth.AuthWrapper(r_getinfo, authLevels, p)
 			},
 		},
@@ -517,7 +590,7 @@ func BuildSchema() graphql.Schema {
 			Description: "Get a list of all nodes seen in network though channels and node announcement messages",
 			Args: graphql.FieldConfigArgument {
 				"id": &graphql.ArgumentConfig {
-					Type: graphql.String,
+					Type: graphql.NewNonNull(graphql.String),
 					DefaultValue: "",
 					Description: "Id for listnodes query. '' is all nodes.",
 				},

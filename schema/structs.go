@@ -5,6 +5,26 @@ import (
 )
 
 
+type FeeRateEstimate_ql struct {
+	Style                      FeeRateStyle_ql
+	Details                    *glightning.FeeRateDetails
+	OnchainEstimate            *OnchainEstimate_ql
+	Warning                    string
+}
+
+type FeeRateStyle_ql string
+
+const (
+	SatPerKiloByte FeeRateStyle_ql = "perkb"
+	SatPerKiloSipa FeeRateStyle_ql = "perkw"
+)
+
+type OnchainEstimate_ql struct {
+	OpeningChannelSatoshis     string
+	MutualCloseSatoshis        string
+	UnilateralCloseSatoshis    string
+}
+
 type Peer_ql struct {
 	Id             string        `json:"id"`
 	Connected      bool          `json:"connected"`

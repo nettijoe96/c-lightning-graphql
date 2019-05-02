@@ -4,9 +4,27 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/nettijoe96/c-lightning-graphql/global"
 	"github.com/niftynei/glightning/glightning"
-	"errors"
+	"github.com/pkg/errors"
 )
 
+//feerates
+func r_feerates(p graphql.ResolveParams) (interface{}, error) {
+	var style FeeRateStyle_ql = FeeRateStyle_ql(p.Args["style"].(string))
+	var feeRateEstimate_ql FeeRateEstimate_ql
+	var feeRateStyle glightning.FeeRateStyle
+	var err error
+	l := global.GetGlobalLightning()
+	feeRateStyle, err = qlToFeeRateStyle(style)
+	if err != nil {
+		return nil, err
+	}
+	feeRateEstimate, err := l.FeeRates(feeRateStyle)
+	if err != nil {
+		return nil, err
+	}
+	feeRateEstimate_ql = feeRateEstimateToql(*feeRateEstimate)
+	return feeRateEstimate_ql, err
+}
 
 func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
         l := global.GetGlobalLightning()
@@ -15,23 +33,6 @@ func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
         nodeToNodeInfo(node, nodeinfo)
         return nodeinfo, err
 }
-
-
-func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
-	var lstNode []glightning.Node
-        var err error
-        l := global.GetGlobalLightning()
-	id, idPassed := p.Args["id"]
-	if !idPassed {
-		err = errors.New("Cannot find id in mapping.")
-	} else if id.(string) == "" {
-                lstNode, err = l.ListNodes()
-	}else{
-		lstNode, err = l.GetNode(id.(string))
-	}
-        return lstNode, err
-}
-
 
 func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {
         var lstInvoice []glightning.Invoice
@@ -50,6 +51,21 @@ func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {
 		lstInvoice_ql = append(lstInvoice_ql, invoiceToql(invoice))
 	}
 	return lstInvoice_ql, err
+}
+
+func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
+	var lstNode []glightning.Node
+        var err error
+        l := global.GetGlobalLightning()
+	id, idPassed := p.Args["id"]
+	if !idPassed {
+		err = errors.New("Cannot find id in mapping.")
+	} else if id.(string) == "" {
+                lstNode, err = l.ListNodes()
+	}else{
+		lstNode, err = l.GetNode(id.(string))
+	}
+        return lstNode, err
 }
 
 
