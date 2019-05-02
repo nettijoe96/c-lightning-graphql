@@ -2,54 +2,111 @@ package auth
 
 import (
 	"context"
-	"errors"
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/graphql-go/graphql"
+	"crypto/rsa"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/pkg/errors"
+	"github.com/graphql-go/graphql"
+	"github.com/nettijoe96/c-lightning-graphql/crypto"
+	"github.com/nettijoe96/c-lightning-graphql/global"
+	"log"
 	"net/http"
 )
 
 
 type ResolverFunc func(p graphql.ResolveParams) (interface{}, error)
 
-type AuthLevel int
+type AuthLevel string
 
 const (
-	NoAuth AuthLevel = iota
-	FundsAuth
+	NoAuth AuthLevel = "noauth"
+	FundsAuth = "funds"
 )
 
-func AuthWrapper(resolver ResolverFunc, authLevel AuthLevel, p graphql.ResolveParams) (interface{}, error) {
-        //var auth jwt = p.Args["auth"]  //this is where we get jwt TODO
-	var isAuth bool
-	var err error
-	fmt.Println(p.Context.Value("token").(string))
-	switch authLevel {
-	//this is where we verify jwt is valid and has priviledges TODO
-        case NoAuth:
+func AuthWrapper(resolver ResolverFunc, authLevels []AuthLevel, p graphql.ResolveParams) (interface{}, error) {
+	var isAuth, hasPrivilege, isNotExpired bool
+	var rawToken, certfile string
+	var token *jwt.Token
+	var err, e error
+	var pub *rsa.PublicKey
+	var containsToken bool = p.Context.Value("token") != nil
+        if len(authLevels) == 1 && authLevels[0] == NoAuth {
 		isAuth = true
-	case FundsAuth:
-		isAuth = checkAuth(FundsAuth, p.Context.Value("token").(string))
-        }
+	}else if containsToken {
+		plugin := global.GetGlobalPlugin()
+		certfile = plugin.GetOptionValue("certfile")
+	        pub, err = crypto.LoadPubRSA(certfile)
+		if err != nil {
+			isAuth = false
+			log.Print("server cannot load keyfile")
+		}else{
+	                rawToken = p.Context.Value("token").(string)
+	                token, err = checkTokenSignature(rawToken, pub)
+		        isNotExpired = checkTimestamp(token)
+		        if err != nil {
+			        isAuth = false
+			        err = errors.Wrap(err, "token signature failed")
+		        }else if !isNotExpired {
+			        isAuth = false
+			        err = errors.New("token is expired")
+		        }else{
+		                for _, authLevel := range authLevels {
+		                        hasPrivilege, e = checkPrivilege(authLevel, token)
+				        if !hasPrivilege || e != nil {
+					        err = errors.Wrap(err, e.Error())
+				        }
+			        }
+			        if err == nil {
+				        isAuth = true
+			        }else {
+				        isAuth = false
+			        }
+			}
+                }
+	}else{
+		isAuth = false
+	}
 
 	if isAuth {
 		return resolver(p)
 	}else{
-		return "", err
+		return nil, errors.Wrap(err, "Not Authentificated")
 	}
 }
 
 
-func checkAuth(authLevel AuthLevel, rawToken string) bool {
-	_, err := CheckTokenSignature(rawToken)
-	return err == nil
+func checkTimestamp(token *jwt.Token) bool {
+	//TODO
+	return true
+}
+
+func checkPrivilege(authLevel AuthLevel, token *jwt.Token) (bool, error) {
+	var hasPrivilege bool
+	var err error
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	        if privileges, ok := claims["privileges"]; ok {
+			//privileges = strings.Split(strPrivileges.(string), ",")
+			for _, p := range privileges.([]interface{}) {
+				if string(authLevel) == p.(string) {
+					hasPrivilege = true
+					break
+				}
+			}
+			hasPrivilege = false
+			err = errors.New("does not contain privilege " + string(authLevel))
+		}else{
+		        err = errors.New("token does not contain privilege claim")
+	        }
+	}else{
+		err = errors.New("token is invalid")
+	}
+
+	return hasPrivilege, err
 }
 
 
 func GetAuthHandler(graphqlHandler http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//authorizationHeader := r.Header.Get("token")
-		//add in token sig auth here! TODO
 		var rawToken string = r.Header.Get("token")
 		newCtx := context.WithValue(context.Background(), "token", rawToken)
 		newR := r.WithContext(newCtx)
@@ -58,20 +115,17 @@ func GetAuthHandler(graphqlHandler http.Handler) http.Handler {
 
 }
 
-var jwtSecret []byte = []byte("thepolyglotdeveloper")
-
-func CheckTokenSignature(t string) (*jwt.Token, error) {
+func checkTokenSignature(t string, priv *rsa.PublicKey) (*jwt.Token, error) {
 	if t == "" {
 		return nil, errors.New("Token is not present")
 	}
         token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
-                if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+                if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 		        return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 	        }
 
-	        // jwtSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return jwtSecret, nil
+		return priv, nil
 		})
 	return token, err
 }

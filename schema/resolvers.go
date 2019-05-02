@@ -2,14 +2,14 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/nettijoe96/c-lightning-api/lightning"
+	"github.com/nettijoe96/c-lightning-graphql/global"
 	"github.com/niftynei/glightning/glightning"
 	"errors"
 )
 
 
 func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
-        l := lightning.GetGlobalLightning()
+        l := global.GetGlobalLightning()
 	node, err := l.GetInfo()
 	var nodeinfo *NodeInfo_ql = &NodeInfo_ql{}
         nodeToNodeInfo(node, nodeinfo)
@@ -20,7 +20,7 @@ func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
 func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
 	var lstNode []glightning.Node
         var err error
-        l := lightning.GetGlobalLightning()
+        l := global.GetGlobalLightning()
 	id, idPassed := p.Args["id"]
 	if !idPassed {
 		err = errors.New("Cannot find id in mapping.")
@@ -37,7 +37,7 @@ func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {
         var lstInvoice []glightning.Invoice
 	var lstInvoice_ql []Invoice_ql
 	var err error
-	l := lightning.GetGlobalLightning()
+	l := global.GetGlobalLightning()
 	label, labelPassed := p.Args["label"]
 	if !labelPassed {
 		err = errors.New("Cannot find label in mapping.")
@@ -57,7 +57,7 @@ func r_listpeers(p graphql.ResolveParams) (interface{}, error) {
 	var lstPeer []glightning.Peer
 	var lstPeer_ql []Peer_ql
 	var err error
-	l := lightning.GetGlobalLightning()
+	l := global.GetGlobalLightning()
 	id, idPassed := p.Args["id"]
         level, levelPassed := p.Args["level"]
 	var loglevel glightning.LogLevel
@@ -92,7 +92,7 @@ func r_pay(p graphql.ResolveParams) (interface{}, error) {
         var paymentSuccess *glightning.PaymentSuccess
 	var paymentSuccess_ql PaymentSuccess_ql
         var err error
-	l := lightning.GetGlobalLightning()
+	l := global.GetGlobalLightning()
 	bolt11, isBolt11 := p.Args["bolt11"]
 	if !isBolt11 {
 		err = errors.New("Cannot find bolt11 in mapping.")

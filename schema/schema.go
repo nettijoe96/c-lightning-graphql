@@ -3,7 +3,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/nettijoe96/c-lightning-api/auth"
+	"github.com/nettijoe96/c-lightning-graphql/auth"
 )
 
 var nodeinfoType = graphql.NewObject(
@@ -472,7 +472,8 @@ func BuildSchema() graphql.Schema {
 			Type:  nodeinfoType,
 			Description: "Get my node info",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return auth.AuthWrapper(r_getinfo, auth.FundsAuth, p)
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.FundsAuth}
+				return auth.AuthWrapper(r_getinfo, authLevels, p)
 			},
 		},
 		"listnodes": &graphql.Field {

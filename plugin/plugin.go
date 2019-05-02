@@ -1,14 +1,12 @@
 package plugin
 
 import (
-	"context"
+	"crypto/tls"
 	"fmt"
-	"encoding/json"
-	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/nettijoe96/c-lightning-api/auth"
-	"github.com/nettijoe96/c-lightning-api/lightning"
-	"github.com/nettijoe96/c-lightning-api/schema"
+	"github.com/nettijoe96/c-lightning-graphql/auth"
+	"github.com/nettijoe96/c-lightning-graphql/global"
+	"github.com/nettijoe96/c-lightning-graphql/schema"
 	"github.com/niftynei/glightning/glightning"
 	"github.com/niftynei/glightning/jrpc2"
 	"log"
@@ -16,30 +14,24 @@ import (
 	"strconv"
 )
 
-var plugin *glightning.Plugin
-
-
-func GetGlobalPlugin() *glightning.Plugin {
-	return plugin
-}
-
 
 func Init() {
-	plugin = glightning.NewPlugin(InitFunc)
-	plugin.RegisterOption(glightning.NewOption("api-port", "port api is available on. default: 9042", "9042"))
-	plugin.RegisterOption(glightning.NewOption("api-page", "page api is available on. default: graphql", "graphql"))
-	plugin.RegisterOption(glightning.NewOption("api-certfile", "server certificate. User must approve this certificate. Required with -api-tls=true, which it is by default", "cert.pem"))
-	plugin.RegisterOption(glightning.NewOption("api-keyfile", "private key file of the public key in the server certificate. Required with -api-tls=true, which it is by default.", "key.pem"))
-	plugin.RegisterOption(glightning.NewOption("api-tls", "enable tls, default is enabled", "true"))
+	plugin := glightning.NewPlugin(InitFunc)
+	plugin.RegisterOption(glightning.NewOption("graphql-port", "port api is available on. default: 9742", "9742"))
+	plugin.RegisterOption(glightning.NewOption("graphql-page", "page api is available on. default: graphql", "graphql"))
+	plugin.RegisterOption(glightning.NewOption("certfile", "server certificate. User must approve this certificate. Required with -api-tls=true, which it is by default", "cert.pem"))
+	plugin.RegisterOption(glightning.NewOption("keyfile", "private key file of the public key in the server certificate. Required with -api-tls=true, which it is by default.", "key.pem"))
+	plugin.RegisterOption(glightning.NewOption("graphql-tls", "enable tls, default is enabled", "true"))
 	rpcStartApi := glightning.NewRpcMethod(&StartApi{}, "run lightning graphql api")
 	rpcStartApi.LongDesc = "run lightning graphql api on provided --port (default: 9042) and at --page (default: graphql). Access api at localhost:<port>/<page>/"
 	plugin.RegisterMethod(rpcStartApi)
 	registerSubscriptions(plugin)
+	global.SetGlobalPlugin(plugin)
 }
 
 func InitFunc(p *glightning.Plugin, o map[string]string, config *glightning.Config) {
-	l := lightning.GetGlobalLightning()
-	l.StartUp(config.RpcFile, config.LightningDir) //TODO maybe it isn't looking at config?
+	l := global.GetGlobalLightning()
+	l.StartUp(config.RpcFile, config.LightningDir)
 }
 
 func OnConnect(c *glightning.ConnectEvent) {
@@ -66,28 +58,38 @@ func (api *StartApi) Name() string {
 }
 
 func (api *StartApi) Call() (jrpc2.Result, error) {
+	plugin := global.GetGlobalPlugin()
 	var port string = plugin.GetOptionValue("graphql-port")
 	var page string = plugin.GetOptionValue("graphql-page")
-	isTLS, err := strconv.ParseBool(plugin.GetOptionValue("tls"))
+	isTLS, err := strconv.ParseBool(plugin.GetOptionValue("graphql-tls"))
         s := schema.BuildSchema()
 	h := handler.New(&handler.Config{
 		Schema: &s,
 		Pretty: true,
 		GraphiQL: true,
 	})
-        http.Handle("/" + page, h)
 	if isTLS {
 	        var certfile string = plugin.GetOptionValue("certfile")
 	        var keyfile string = plugin.GetOptionValue("keyfile")
-	        go http.ListenAndServeTLS(":" + port, certfile, keyfile, nil)
+		var server *http.Server = &http.Server {
+			Addr: ":" + port,
+			Handler: auth.GetAuthHandler(h),
+			TLSConfig: &tls.Config {
+				ClientAuth: tls.NoClientCert,
+				ServerName: "127.0.0.1",
+			},
+		}
+	        go server.ListenAndServeTLS(certfile, keyfile)
+	        //go http.ListenAndServeTLS(":" + port, certfile, keyfile, nil)
 	}else{
+                http.Handle("/" + page, auth.GetAuthHandler(h))
 	        go http.ListenAndServe(":" + port, nil)
 	}
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), err
 }
 
 func (api *StartApi) Standalone(isTLS bool, port, page, certfile, keyfile, lightningDir string) (jrpc2.Result, error) {
-	l := lightning.GetGlobalLightning()
+	l := global.GetGlobalLightning()
 	l.StartUp("lightning-rpc", lightningDir)
         s := schema.BuildSchema()
 	h := handler.New(&handler.Config{
@@ -95,10 +97,7 @@ func (api *StartApi) Standalone(isTLS bool, port, page, certfile, keyfile, light
 		Pretty: true,
 		GraphiQL: true,
 	})
-	//new
-	//graphqlHandler := graphqlHandler(s)
 	http.Handle("/" + page, auth.GetAuthHandler(h))
-
 	if isTLS {
 	        http.ListenAndServeTLS(":" + port, certfile, keyfile, nil)
 	}else{
@@ -107,18 +106,4 @@ func (api *StartApi) Standalone(isTLS bool, port, page, certfile, keyfile, light
 
 	return fmt.Sprintf("running api on localhost:" + port + "/" + page + "/"), nil
 }
-
-//https://www.thepolyglotdeveloper.com/2018/07/jwt-authorization-graphql-api-using-golang/
-func graphqlHandler(schema graphql.Schema) http.Handler {
-	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		result := graphql.Do(graphql.Params {
-			Schema: schema,
-			RequestString: request.URL.Query().Get("query"), //TODO: do I need this?
-			Context: context.WithValue(context.Background(), "token", request.URL.Query()),
-		})
-		json.NewEncoder(response).Encode(result)
-	})
-}
-
-
 
