@@ -26,6 +26,7 @@ func r_feerates(p graphql.ResolveParams) (interface{}, error) {
 	return feeRateEstimate_ql, err
 }
 
+//getinfo
 func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
         l := global.GetGlobalLightning()
 	node, err := l.GetInfo()
@@ -34,6 +35,7 @@ func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
         return nodeinfo, err
 }
 
+//listinvoices
 func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {
         var lstInvoice []glightning.Invoice
 	var lstInvoice_ql []Invoice_ql
@@ -53,6 +55,7 @@ func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {
 	return lstInvoice_ql, err
 }
 
+//listnodes
 func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
 	var lstNode []glightning.Node
         var err error
@@ -69,6 +72,7 @@ func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
 }
 
 
+//listpeers
 func r_listpeers(p graphql.ResolveParams) (interface{}, error) {
 	var lstPeer []glightning.Peer
 	var lstPeer_ql []Peer_ql
@@ -102,8 +106,7 @@ func r_listpeers(p graphql.ResolveParams) (interface{}, error) {
 	return lstPeer_ql, err
 }
 
-//Mutations
-
+//pay
 func r_pay(p graphql.ResolveParams) (interface{}, error) {
         var paymentSuccess *glightning.PaymentSuccess
 	var paymentSuccess_ql PaymentSuccess_ql

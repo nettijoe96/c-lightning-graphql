@@ -48,6 +48,42 @@ func onchainEstimateToql(onchainEstimate glightning.OnchainEstimate) OnchainEsti
 //feerates ^^
 
 
+//getinfo
+func nodeToNodeInfo(nodeinfo *glightning.NodeInfo, nodeinfo_ql *NodeInfo_ql) {
+	nodeinfo_ql.Id = nodeinfo.Id
+	nodeinfo_ql.Alias = nodeinfo.Alias
+	nodeinfo_ql.Color = nodeinfo.Color
+	nodeinfo_ql.PeerCount = nodeinfo.PeerCount
+	nodeinfo_ql.PendingChannelCount = nodeinfo.PendingChannelCount
+        nodeinfo_ql.ActiveChannelCount = nodeinfo.ActiveChannelCount
+	nodeinfo_ql.InactiveChannelCount = nodeinfo.InactiveChannelCount
+	nodeinfo_ql.Addresses = nodeinfo.Addresses
+        nodeinfo_ql.Binding = nodeinfo.Binding
+	nodeinfo_ql.Version = nodeinfo.Version
+	nodeinfo_ql.Blockheight = nodeinfo.Blockheight
+	nodeinfo_ql.Network = nodeinfo.Network
+	nodeinfo_ql.FeesCollectedMilliSatoshis = strconv.FormatUint(nodeinfo.FeesCollectedMilliSatoshis, 10)
+}
+//getinfo ^^
+
+
+//listinvoices
+func invoiceToql(invoice glightning.Invoice) Invoice_ql {
+	var ql Invoice_ql
+	ql.PaymentHash = invoice.PaymentHash
+	ql.ExpiresAt = strconv.FormatUint(invoice.ExpiresAt, 10)
+	ql.Bolt11 = invoice.Bolt11
+	ql.WarningOffline = invoice.WarningOffline
+	ql.WarningCapacity = invoice.WarningCapacity
+	ql.Label = ql.Label
+	ql.Status = ql.Status
+	ql.Description = ql.Description
+	return ql
+}
+//listinvoices ^^
+
+
+//listpeers
 func peerToql(peer glightning.Peer) Peer_ql {
         var ql Peer_ql
 	ql.Id = peer.Id
@@ -61,7 +97,6 @@ func peerToql(peer glightning.Peer) Peer_ql {
 	ql.Logs = peer.Logs
 	return ql
 }
-
 func peerChannelToql(peerChannel glightning.PeerChannel) PeerChannel_ql {
 	var ql PeerChannel_ql
 	ql.State = peerChannel.State
@@ -103,7 +138,6 @@ func peerChannelToql(peerChannel glightning.PeerChannel) PeerChannel_ql {
 	}
 	return ql
 }
-
 func htlcToql(htlc *glightning.Htlc) Htlc_ql {
 	var ql Htlc_ql
 	ql.Direction = htlc.Direction
@@ -114,41 +148,11 @@ func htlcToql(htlc *glightning.Htlc) Htlc_ql {
 	ql.State = htlc.State
 	return ql
 }
+//listpeers ^^
 
 
-func invoiceToql(invoice glightning.Invoice) Invoice_ql {
-	var ql Invoice_ql
-	ql.PaymentHash = invoice.PaymentHash
-	ql.ExpiresAt = strconv.FormatUint(invoice.ExpiresAt, 10)
-	ql.Bolt11 = invoice.Bolt11
-	ql.WarningOffline = invoice.WarningOffline
-	ql.WarningCapacity = invoice.WarningCapacity
-	ql.Label = ql.Label
-	ql.Status = ql.Status
-	ql.Description = ql.Description
-	return ql
-}
 
-
-func nodeToNodeInfo(nodeinfo *glightning.NodeInfo, nodeinfo_ql *NodeInfo_ql) {
-	nodeinfo_ql.Id = nodeinfo.Id
-	nodeinfo_ql.Alias = nodeinfo.Alias
-	nodeinfo_ql.Color = nodeinfo.Color
-	nodeinfo_ql.PeerCount = nodeinfo.PeerCount
-	nodeinfo_ql.PendingChannelCount = nodeinfo.PendingChannelCount
-        nodeinfo_ql.ActiveChannelCount = nodeinfo.ActiveChannelCount
-	nodeinfo_ql.InactiveChannelCount = nodeinfo.InactiveChannelCount
-	nodeinfo_ql.Addresses = nodeinfo.Addresses
-        nodeinfo_ql.Binding = nodeinfo.Binding
-	nodeinfo_ql.Version = nodeinfo.Version
-	nodeinfo_ql.Blockheight = nodeinfo.Blockheight
-	nodeinfo_ql.Network = nodeinfo.Network
-	nodeinfo_ql.FeesCollectedMilliSatoshis = strconv.FormatUint(nodeinfo.FeesCollectedMilliSatoshis, 10)
-}
-
-
-//mutation related
-
+//pay
 func paymentSuccessToql(paymentSuccess glightning.PaymentSuccess) PaymentSuccess_ql {
         var ql PaymentSuccess_ql
 	ql.PaymentFields = paymentFieldsToql(paymentSuccess.PaymentFields)
@@ -162,8 +166,6 @@ func paymentSuccessToql(paymentSuccess glightning.PaymentSuccess) PaymentSuccess
 	}
         return ql
 }
-
-
 func paymentFieldsToql(paymentFields glightning.PaymentFields) PaymentFields_ql {
 	var ql PaymentFields_ql
 	ql.Id = strconv.FormatUint(paymentFields.Id, 10)
@@ -177,7 +179,6 @@ func paymentFieldsToql(paymentFields glightning.PaymentFields) PaymentFields_ql 
 	ql.Description = paymentFields.Description
 	return ql
 }
-
 func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
 	var ql PayFailure_ql
 	ql.Message = payFailure.Message
@@ -193,7 +194,6 @@ func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
 	}
         return ql
 }
-
 func routeHopToql(routeHop glightning.RouteHop) RouteHop_ql {
 	var ql RouteHop_ql
 	ql.Id = routeHop.Id
@@ -202,6 +202,6 @@ func routeHopToql(routeHop glightning.RouteHop) RouteHop_ql {
 	ql.Delay = routeHop.Delay
 	return ql
 }
-
+//pay ^^
 
 

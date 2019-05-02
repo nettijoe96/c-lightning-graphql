@@ -4,38 +4,39 @@ import (
 	"github.com/niftynei/glightning/glightning"
 )
 
-
+//feerates
 type FeeRateEstimate_ql struct {
 	Style                      FeeRateStyle_ql
 	Details                    *glightning.FeeRateDetails
 	OnchainEstimate            *OnchainEstimate_ql
 	Warning                    string
 }
-
 type FeeRateStyle_ql string
-
 const (
 	SatPerKiloByte FeeRateStyle_ql = "perkb"
 	SatPerKiloSipa FeeRateStyle_ql = "perkw"
 )
-
 type OnchainEstimate_ql struct {
 	OpeningChannelSatoshis     string
 	MutualCloseSatoshis        string
 	UnilateralCloseSatoshis    string
 }
+//feerates ^^
 
-type Peer_ql struct {
-	Id             string        `json:"id"`
-	Connected      bool          `json:"connected"`
-	NetAddresses   []string      `json:"netaddr"`
-	GlobalFeatures string        `json:"globalfeatures"`
-	LocalFeatures  string        `json:"localfeatures"`
-	Channels       []PeerChannel_ql `json:"channels"`
-	Logs           []glightning.Log         `json:"log,omitempty"`
+//listinvoices
+type Invoice_ql struct {
+	PaymentHash     string `json:"payment_hash"`
+	ExpiresAt       string `json:"expires_at"` // uint64
+	Bolt11          string `json:"bolt11"`
+	WarningOffline  string `json:"warning_offline"`
+	WarningCapacity string `json:"warning_capacity"`
+	Label           string `json:"label"`
+	Status          string `json:"status"`
+	Description     string `json:"description"`
 }
+//listinvoices ^^
 
-
+//getinfo
 type NodeInfo_ql struct {
 	Id                         string            `json:"id"`
 	Alias                      string            `json:"alias"`
@@ -51,7 +52,18 @@ type NodeInfo_ql struct {
 	Network                    string            `json:"network"`
 	FeesCollectedMilliSatoshis string            `json:"msatoshi_fees_collected"` //graphql protocol cannot handle uint64, so turn in into string
 }
+//getinfo ^^
 
+//listpeers
+type Peer_ql struct {
+	Id             string        `json:"id"`
+	Connected      bool          `json:"connected"`
+	NetAddresses   []string      `json:"netaddr"`
+	GlobalFeatures string        `json:"globalfeatures"`
+	LocalFeatures  string        `json:"localfeatures"`
+	Channels       []PeerChannel_ql `json:"channels"`
+	Logs           []glightning.Log         `json:"log,omitempty"`
+}
 type PeerChannel_ql struct {
 	State                            string            `json:"state"`
 	ScratchTxId                      string            `json:"scratch_txid"`
@@ -87,12 +99,10 @@ type PeerChannel_ql struct {
 	OutMilliSatoshiFulfilled         string            `json:"out_msatoshi_fulfilled"`
 	Htlcs                            []Htlc_ql         `json:"htlcs"`
 }
-
 type FundingAllocations_ql struct {
         id string
 	msat string
 }
-
 type Htlc_ql struct {
 	Direction    string `json:"direction"`
 	Id           string `json:"id"`
@@ -101,6 +111,47 @@ type Htlc_ql struct {
 	PaymentHash  string `json:"payment_hash"`
 	State        string `json:"state"`
 }
+//listpeers ^^
+
+
+//pay
+type PaymentSuccess_ql struct {
+	PaymentFields PaymentFields_ql
+	GetRouteTries int          `json:"getroute_tries"`
+	SendPayTries  int          `json:"sendpay_tries"`
+	Route         []RouteHop_ql   `json:"route"`
+	Failures      []PayFailure_ql `json:"failures"`
+}
+type RouteHop_ql struct {
+	Id              string
+	ShortChannelId  string
+	MilliSatoshi    string  // uint64
+	Delay           uint
+}
+type PayFailure_ql struct {
+	Message       string     `json:"message"`
+	Type          string     `json:"type"`
+	OnionReply    string     `json:"onionreply"`
+	ErringIndex   int        `json:"erring_index"`
+	FailCode      int        `json:"failcode"`
+	ErringNode    string     `json:"erring_node"`
+	ErringChannel string     `json:"erring_channel"`
+	ChannelUpdate string     `json:"channel_update"`
+	Route         []RouteHop_ql `json:"route"`
+}
+type PaymentFields_ql struct {
+	Id               string `json:"id"`             //uint64
+	PaymentHash      string `json:"payment_hash"`
+	Destination      string `json:"destination"`
+	MilliSatoshi     string `json:"msatoshi"`       //uint64
+	MilliSatoshiSent string `json:"msatoshi_sent"`  //uint64
+	CreatedAt        string `json:"created_at"`     //uint64
+	Status           string `json:"status"`
+	PaymentPreimage  string `json:"payment_preimage"`
+	Description      string `json:"description"`
+}
+//pay ^^
+
 
 
 type PayRequest_ql struct {
@@ -113,55 +164,4 @@ type PayRequest_ql struct {
 	MaxDelay       uint
 	ExemptFee      bool
 }
-
-type Invoice_ql struct {
-	PaymentHash     string `json:"payment_hash"`
-	ExpiresAt       string `json:"expires_at"` // uint64
-	Bolt11          string `json:"bolt11"`
-	WarningOffline  string `json:"warning_offline"`
-	WarningCapacity string `json:"warning_capacity"`
-	Label           string `json:"label"`
-	Status          string `json:"status"`
-	Description     string `json:"description"`
-}
-
-type RouteHop_ql struct {
-	Id              string
-	ShortChannelId  string
-	MilliSatoshi    string  // uint64
-	Delay           uint
-}
-
-type PaymentSuccess_ql struct {
-	PaymentFields PaymentFields_ql
-	GetRouteTries int          `json:"getroute_tries"`
-	SendPayTries  int          `json:"sendpay_tries"`
-	Route         []RouteHop_ql   `json:"route"`
-	Failures      []PayFailure_ql `json:"failures"`
-}
-
-type PayFailure_ql struct {
-	Message       string     `json:"message"`
-	Type          string     `json:"type"`
-	OnionReply    string     `json:"onionreply"`
-	ErringIndex   int        `json:"erring_index"`
-	FailCode      int        `json:"failcode"`
-	ErringNode    string     `json:"erring_node"`
-	ErringChannel string     `json:"erring_channel"`
-	ChannelUpdate string     `json:"channel_update"`
-	Route         []RouteHop_ql `json:"route"`
-}
-
-type PaymentFields_ql struct {
-	Id               string `json:"id"`             //uint64
-	PaymentHash      string `json:"payment_hash"`
-	Destination      string `json:"destination"`
-	MilliSatoshi     string `json:"msatoshi"`       //uint64
-	MilliSatoshiSent string `json:"msatoshi_sent"`  //uint64
-	CreatedAt        string `json:"created_at"`     //uint64
-	Status           string `json:"status"`
-	PaymentPreimage  string `json:"payment_preimage"`
-	Description      string `json:"description"`
-}
-
 
