@@ -5,6 +5,7 @@ import (
 	"github.com/nettijoe96/c-lightning-graphql/global"
 	"github.com/niftynei/glightning/glightning"
 	"github.com/pkg/errors"
+	"strconv"
 )
 
 
@@ -48,6 +49,37 @@ func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
         nodeToNodeInfo(node, nodeinfo)
         return nodeinfo, err
 }
+
+
+//getroute
+func r_getroute(p graphql.ResolveParams) (interface{}, error) {
+	l := global.GetGlobalLightning()
+	var err error
+	var id string = p.Args["id"].(string)
+	var msatoshi uint64
+	msatoshi, err = strconv.ParseUint(p.Args["msatoshis"].(string), 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, "msatoshi not parsed in getroute")
+	}
+	var riskfactor float32 = float32(p.Args["riskfactor"].(float64))
+	var cltv uint = uint(p.Args["cltv"].(int))
+	var fromid string = p.Args["fromid"].(string)
+	var fuzzpercent float32 = float32(p.Args["fuzzpercent"].(float64))
+	var exclude []string = p.Args["exclude"].([]string)
+	var maxhops int32 = int32(p.Args["maxhops"].(int))
+        var hops []glightning.RouteHop
+        var hops_ql []RouteHop_ql
+	hops, err = l.GetRoute(id, msatoshi, riskfactor, cltv, fromid, fuzzpercent, exclude, maxhops)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed getRoute")
+	}
+	for _, h := range hops {
+		hops_ql = append(hops_ql, routeHopToql(h))
+	}
+	return hops_ql, err
+}
+//getroute^^
+
 
 //listinvoices
 func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {

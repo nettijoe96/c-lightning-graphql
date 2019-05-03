@@ -31,6 +31,53 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_getinfo, authLevels, p)
 			},
 		},
+		"getroute": &graphql.Field {
+			Type: graphql.NewList(routeHopType),
+			Description: "get route",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "Id for getroute query. '' is all nodes.",
+				},
+				"msatoshis": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "msatoshis to send",
+				},
+				"riskfactor": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.Float),
+					Description: "risk factor",
+				},
+				"cltv": &graphql.ArgumentConfig {
+					Type: graphql.Int,
+					DefaultValue: 9,
+					Description: "cltv (default is 9)",
+				},
+				"fromid": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "route from this id rather than current node",
+				},
+				"fuzzpercent": &graphql.ArgumentConfig {
+					Type: graphql.Float,
+					DefaultValue: 5.0,
+					Description: "fuzz percent (default is 5.0)",
+				},
+				"exclude": &graphql.ArgumentConfig {
+					Type: graphql.NewList(graphql.String),
+					DefaultValue: make([]string, 0),
+					Description: "channels to exclude from route",
+				},
+				"maxhops": &graphql.ArgumentConfig {
+					Type: graphql.Int,
+					DefaultValue: 20,
+					Description: "max hops",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_getroute, authLevels, p)
+			},
+		},
 		"listinvoices": &graphql.Field {
 			Type: graphql.NewList(invoiceType),
 			Description: "List invoices",

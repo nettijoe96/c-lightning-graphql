@@ -66,6 +66,16 @@ func nodeToNodeInfo(nodeinfo *glightning.NodeInfo, nodeinfo_ql *NodeInfo_ql) {
 }
 //getinfo ^^
 
+//getroute
+func routeHopToql(routeHop glightning.RouteHop) RouteHop_ql {
+	var ql RouteHop_ql
+	ql.Id = routeHop.Id
+	ql.ShortChannelId = routeHop.ShortChannelId
+	ql.MilliSatoshi = strconv.FormatUint(routeHop.MilliSatoshi, 10)
+	ql.Delay = routeHop.Delay
+	return ql
+}
+//getroute ^^
 
 //listinvoices
 func invoiceToql(invoice glightning.Invoice) Invoice_ql {
@@ -193,14 +203,6 @@ func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
 		ql.Route = append(ql.Route, routeHopToql(routeHop))
 	}
         return ql
-}
-func routeHopToql(routeHop glightning.RouteHop) RouteHop_ql {
-	var ql RouteHop_ql
-	ql.Id = routeHop.Id
-	ql.ShortChannelId = routeHop.ShortChannelId
-	ql.MilliSatoshi = strconv.FormatUint(routeHop.MilliSatoshi, 10)
-	ql.Delay = routeHop.Delay
-	return ql
 }
 //pay ^^
 

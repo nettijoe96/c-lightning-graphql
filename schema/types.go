@@ -112,6 +112,27 @@ var nodeinfoType = graphql.NewObject(
 )
 //getinfo ^^
 
+//getroute
+var routeHopType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "routeHop",
+		Fields: graphql.Fields {
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"shortChannelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"delay": &graphql.Field {
+				Type: graphql.Int,
+			},
+		},
+	},
+)
+//getroute ^^
 
 //listinvoices 
 var invoiceType = graphql.NewObject(
@@ -500,25 +521,6 @@ var payFailureType = graphql.NewObject(
 			},
 			"route": &graphql.Field {
 				Type: graphql.NewList(routeHopType),
-			},
-		},
-	},
-)
-var routeHopType = graphql.NewObject(
-	graphql.ObjectConfig {
-		Name: "routeHop",
-		Fields: graphql.Fields {
-			"id": &graphql.Field {
-				Type: graphql.String,
-			},
-			"shortChannelId": &graphql.Field {
-				Type: graphql.String,
-			},
-			"milliSatoshi": &graphql.Field {
-				Type: graphql.String,
-			},
-			"delay": &graphql.Field {
-				Type: graphql.Int,
 			},
 		},
 	},
