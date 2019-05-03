@@ -81,6 +81,31 @@ func r_getroute(p graphql.ResolveParams) (interface{}, error) {
 //getroute^^
 
 
+//listchannels
+func r_listchannels(p graphql.ResolveParams) (interface{}, error) {
+	var scid string = p.Args["scid"].(string)
+	var source string = p.Args["source"].(string)
+	var channels []glightning.Channel
+	var channels_ql []Channel_ql
+	var err error
+	l := global.GetGlobalLightning()
+	if scid == "" && source == "" {
+		channels, err = l.ListChannels()
+	}else if scid != "" && source == "" {
+		channels, err = l.GetChannel(scid)
+	}else if source != "" && scid == "" {
+		channels, err = l.ListChannelsBySource(scid)
+	}else {
+		err = errors.New("cannot specify both scid and source")
+	}
+	for _, c := range channels {
+		channels_ql = append(channels_ql, channelToql(c))
+	}
+	return channels_ql, err
+}
+//listchannels ^^
+
+
 //listinvoices
 func r_listinvoices(p graphql.ResolveParams) (interface{}, error) {
         var lstInvoice []glightning.Invoice

@@ -77,6 +77,27 @@ func routeHopToql(routeHop glightning.RouteHop) RouteHop_ql {
 }
 //getroute ^^
 
+
+//listchannels
+func channelToql(channel glightning.Channel) Channel_ql {
+	var ql Channel_ql
+	ql.Source = channel.Source
+	ql.Destination = channel.Destination
+	ql.ShortChannelId = channel.ShortChannelId
+	ql.IsPublic = channel.IsPublic
+	ql.Satoshis = strconv.FormatUint(channel.Satoshis, 10)
+	ql.MessageFlags = channel.MessageFlags
+	ql.ChannelFlags = channel.ChannelFlags
+	ql.IsActive = channel.IsActive
+	ql.LastUpdate = channel.LastUpdate
+	ql.BaseFeeMillisatoshi = strconv.FormatUint(channel.BaseFeeMillisatoshi, 10)
+	ql.FeePerMillionth = strconv.FormatUint(channel.FeePerMillionth, 10)
+	ql.Delay = channel.Delay
+	return ql
+}
+//listchannels ^^
+
+
 //listinvoices
 func invoiceToql(invoice glightning.Invoice) Invoice_ql {
 	var ql Invoice_ql

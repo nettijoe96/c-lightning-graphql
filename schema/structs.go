@@ -23,6 +23,23 @@ type OnchainEstimate_ql struct {
 }
 //feerates ^^
 
+//listchannels
+type Channel_ql struct {
+	Source              string `json:"source"`
+	Destination         string `json:"destination"`
+	ShortChannelId      string `json:"short_channel_id"`
+	IsPublic            bool   `json:"public"`
+	Satoshis            string `json:"satoshis"`     //uint64
+	MessageFlags        uint   `json:"message_flags"`
+	ChannelFlags        uint   `json:"channel_flags"`
+	IsActive            bool   `json:"active"`
+	LastUpdate          uint   `json:"last_update"`
+	BaseFeeMillisatoshi string `json:"base_fee_millisatoshi"` //uint64
+	FeePerMillionth     string `json:"fee_per_millionth"`     //uint64
+	Delay               uint   `json:"delay"`
+}
+//listchannels ^^
+
 //listinvoices
 type Invoice_ql struct {
 	PaymentHash     string `json:"payment_hash"`

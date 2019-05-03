@@ -134,6 +134,54 @@ var routeHopType = graphql.NewObject(
 )
 //getroute ^^
 
+
+//listchannels 
+var channelType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "channel",
+		Fields: graphql.Fields {
+			"source": &graphql.Field {
+				Type: graphql.String,
+			},
+			"destination": &graphql.Field {
+				Type: graphql.String,
+			},
+			"shortChannelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"isPublic": &graphql.Field {
+				Type: graphql.Boolean,
+			},
+			"satoshis": &graphql.Field {
+				Type: graphql.String,
+			},
+			"messageFlags": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"channelFlags": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"isActive": &graphql.Field {
+				Type: graphql.Boolean,
+			},
+			"lastUpdate": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"baseFeeMillisatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"feePerMillionth": &graphql.Field {
+				Type: graphql.String,
+			},
+			"delay": &graphql.Field {
+				Type: graphql.Int,
+			},
+		},
+	},
+)
+//listchannels ^^
+
+
 //listinvoices 
 var invoiceType = graphql.NewObject(
 	graphql.ObjectConfig {

@@ -23,6 +23,7 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_feerates, authLevels, p)
 			},
 		},
+
 		"getinfo": &graphql.Field {
 			Type:  nodeinfoType,
 			Description: "Get my node info",
@@ -31,6 +32,7 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_getinfo, authLevels, p)
 			},
 		},
+
 		"getroute": &graphql.Field {
 			Type: graphql.NewList(routeHopType),
 			Description: "get route",
@@ -78,6 +80,28 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_getroute, authLevels, p)
 			},
 		},
+
+		"listchannels": &graphql.Field {
+			Type: graphql.NewList(channelType),
+			Description: "List channels",
+			Args: graphql.FieldConfigArgument {
+				"scid": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "short channel id",
+				},
+				"source": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "source id",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listchannels, authLevels, p)
+			},
+		},
+
 		"listinvoices": &graphql.Field {
 			Type: graphql.NewList(invoiceType),
 			Description: "List invoices",
@@ -93,6 +117,7 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_listinvoices, authLevels, p)
 			},
 		},
+
 		"listnodes": &graphql.Field {
 			Type: graphql.NewList(nodeType),
 			Description: "Get a list of all nodes seen in network though channels and node announcement messages",
@@ -108,6 +133,7 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_listnodes, authLevels, p)
 			},
 		},
+
                 "listpeers": &graphql.Field {
 			Type:  graphql.NewList(peerType),
 			Description: "List peers",
@@ -152,6 +178,7 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_connect, authLevels, p)
 			},
 		},
+
 		"pay": &graphql.Field {
 			Type: paymentSuccessType,
 			Description: "Pay via bolt11 as argument",
