@@ -7,6 +7,20 @@ import (
 	"github.com/pkg/errors"
 )
 
+
+//connect
+func r_connect(p graphql.ResolveParams) (interface{}, error) {
+	var err error
+	var idReturned string
+	var id string = p.Args["id"].(string)
+	var host string = p.Args["host"].(string)
+	var port uint = uint(p.Args["port"].(int))
+	l := global.GetGlobalLightning()
+	idReturned, err = l.Connect(id, host, port)
+	return idReturned, err
+}
+
+
 //feerates
 func r_feerates(p graphql.ResolveParams) (interface{}, error) {
 	var style FeeRateStyle_ql = FeeRateStyle_ql(p.Args["style"].(string))

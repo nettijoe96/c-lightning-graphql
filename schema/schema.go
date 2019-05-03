@@ -83,6 +83,28 @@ func BuildSchema() graphql.Schema {
 		},
 	}
 	mutationFields := graphql.Fields {
+		"connect": &graphql.Field {
+			Type: graphql.String,
+			Description: "Connect to {id} at {host} (which can end in ':port' if not default). {id} can also be of the form id@host",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "id of peer",
+				},
+				"host": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "address of peer. It can be tor, ipv4 or ipv6",
+				},
+				"port": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.Int),
+					Description: "port of peer",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Peers}
+				return auth.AuthWrapper(r_connect, authLevels, p)
+			},
+		},
 		"pay": &graphql.Field {
 			Type: paymentSuccessType,
 			Description: "Pay via bolt11 as argument",
@@ -93,7 +115,7 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.FundsAuth}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
 				return auth.AuthWrapper(r_pay, authLevels, p)
 			},
 		},
