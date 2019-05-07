@@ -22,6 +22,25 @@ func r_connect(p graphql.ResolveParams) (interface{}, error) {
 }
 
 
+//delinvoice
+func r_delinvoice(p graphql.ResolveParams) (interface{}, error) {
+        var err error
+	var label string = p.Args["label"].(string)
+	var status string = p.Args["status"].(string)
+	var ptrInvoice *glightning.Invoice
+	var invoice_ql Invoice_ql
+	l := global.GetGlobalLightning()
+	ptrInvoice, err = l.DeleteInvoice(label, status)
+	if err != nil {
+		err = errors.Wrap(err, "failed to deleteInvoice: " + label + " with status: " + status)
+		return nil, err
+	}
+	invoice_ql = invoiceToql(*ptrInvoice)
+	return invoice_ql, err
+}
+//delinvoice ^^
+
+
 //feerates
 func r_feerates(p graphql.ResolveParams) (interface{}, error) {
 	var style FeeRateStyle_ql = FeeRateStyle_ql(p.Args["style"].(string))
@@ -79,6 +98,37 @@ func r_getroute(p graphql.ResolveParams) (interface{}, error) {
 	return hops_ql, err
 }
 //getroute^^
+
+
+//invoice
+func r_invoice(p graphql.ResolveParams) (interface{}, error) {
+	var invoice_ql Invoice_ql
+	var invoice *glightning.Invoice
+	var err error
+	var msatoshis uint64
+	var description string = p.Args["description"].(string)
+	var label string = p.Args["label"].(string)
+	var expiry uint32 = uint32(p.Args["expiry"].(int))
+	var fallbacks []string = p.Args["fallbacks"].([]string)
+	var preimage string = p.Args["preimage"].(string)
+	var exposeprivatechannels bool = p.Args["exposeprivatechannels"].(bool)
+	msatoshis, err = strconv.ParseUint(p.Args["msatoshis"].(string), 10, 64)
+	if err != nil {
+		err = errors.Wrap(err, "failed to parse uint in r_invoice resolver")
+		return nil, err
+	}
+	l := global.GetGlobalLightning()
+	invoice, err = l.CreateInvoice(msatoshis, label, description, expiry, fallbacks, preimage, exposeprivatechannels)
+	if err != nil {
+		err = errors.Wrap(err, "create invoice failed. Called from r_invoice resolver")
+		return nil, err
+	}
+        invoice_ql = invoiceToql(*invoice)
+	invoice_ql.Label = label
+	invoice_ql.Description = description
+	return invoice_ql, err
+}
+//invoice ^^
 
 
 //listchannels

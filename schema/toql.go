@@ -106,9 +106,9 @@ func invoiceToql(invoice glightning.Invoice) Invoice_ql {
 	ql.Bolt11 = invoice.Bolt11
 	ql.WarningOffline = invoice.WarningOffline
 	ql.WarningCapacity = invoice.WarningCapacity
-	ql.Label = ql.Label
-	ql.Status = ql.Status
-	ql.Description = ql.Description
+	ql.Label = invoice.Label
+	ql.Status = invoice.Status
+	ql.Description = invoice.Description
 	return ql
 }
 //listinvoices ^^

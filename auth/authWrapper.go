@@ -22,6 +22,7 @@ const (
 	NoAuth AuthLevel = "noauth"
 	Funds = "funds"
 	Peers = "peers"
+	Invoices = "invoices"
 )
 
 func AuthWrapper(resolver ResolverFunc, authLevels []AuthLevel, p graphql.ResolveParams) (interface{}, error) {

@@ -80,7 +80,6 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_getroute, authLevels, p)
 			},
 		},
-
 		"listchannels": &graphql.Field {
 			Type: graphql.NewList(channelType),
 			Description: "List channels",
@@ -158,7 +157,7 @@ func BuildSchema() graphql.Schema {
 	mutationFields := graphql.Fields {
 		"connect": &graphql.Field {
 			Type: graphql.String,
-			Description: "Connect to {id} at {host} (which can end in ':port' if not default). {id} can also be of the form id@host",
+			Description: "Connect to {id} at {host}:{port}",
 			Args: graphql.FieldConfigArgument {
 				"id": &graphql.ArgumentConfig {
 					Type: graphql.NewNonNull(graphql.String),
@@ -178,7 +177,68 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_connect, authLevels, p)
 			},
 		},
+		"delinvoice": &graphql.Field {
+			Type: graphql.String,
+			Description: "delete invoice with label and status as non-optional params",
+			Args: graphql.FieldConfigArgument {
+				"label": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "label of invoice",
+				},
+				"status": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "status of invoice to be deleted",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Invoices}
+				return auth.AuthWrapper(r_delinvoice, authLevels, p)
+			},
+		},
+		"invoice": &graphql.Field {
+			Type: invoiceType,
+			Description: "Create new lightning payment invoice",
+			Args: graphql.FieldConfigArgument {
+				"msatoshis": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "msatoshis to send",
+				},
+				"label": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "list invoices. Opional label argument",
+				},
+				"description": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "invoice description",
+				},
+				//optional args
+				"expiry": &graphql.ArgumentConfig {
+					Type: graphql.Int,
+					DefaultValue: 3600, //1 hour
+					Description: "number of seconds the invoice is valid for",
+				},
+				"fallbacks": &graphql.ArgumentConfig {
+					Type: graphql.NewList(graphql.String),
+					DefaultValue: make([]string, 0),
+					Description: "list invoices. Opional label argument",
+				},
+				"preimage": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "the preimage of the htlc chain",
+				},
+				"exposeprivatechannels": &graphql.ArgumentConfig {
+					Type: graphql.Boolean,
+					DefaultValue: false,
+					Description: "exposing channels that are not public to all nodes in the lightning network",
+				},
 
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Invoices}
+				return auth.AuthWrapper(r_invoice, authLevels, p)
+			},
+		},
 		"pay": &graphql.Field {
 			Type: paymentSuccessType,
 			Description: "Pay via bolt11 as argument",
