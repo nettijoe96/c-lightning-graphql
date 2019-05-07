@@ -252,12 +252,29 @@ func r_waitanyinvoice(p graphql.ResolveParams) (interface{}, error) {
 	l := global.GetGlobalLightning()
 	ptrCompletedInvoice, err = l.WaitAnyInvoice(lastpay_index)
 	if err != nil {
-		err = errors.Wrap(err, "wait any invoice failed with lastpay_index param at" + string(lastpay_index))
+		err = errors.Wrap(err, "waitanyinvoice failed with lastpay_index param at" + string(lastpay_index))
 		return nil, err
 	}
 	completedInvoice_ql = completedInvoiceToql(*ptrCompletedInvoice)
 	return completedInvoice_ql, err
 }
+
+
+func r_waitinvoice(p graphql.ResolveParams) (interface{}, error) {
+	var ptrCompletedInvoice *glightning.CompletedInvoice
+	var completedInvoice_ql CompletedInvoice_ql
+	var label string = p.Args["label"].(string)
+        var err error
+	l := global.GetGlobalLightning()
+	ptrCompletedInvoice, err = l.WaitInvoice(label)
+	if err != nil {
+		err = errors.Wrap(err, "wait invoice failed with label param at" + string(label))
+		return nil, err
+	}
+	completedInvoice_ql = completedInvoiceToql(*ptrCompletedInvoice)
+	return completedInvoice_ql, err
+}
+
 
 
 

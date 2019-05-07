@@ -156,7 +156,7 @@ func BuildSchema() graphql.Schema {
 
                 "waitanyinvoice": &graphql.Field {
 			Type:  completedInvoiceType,
-			Description: "wait for an invoices to be paid",
+			Description: "wait for an invoice to be paid",
 			Args: graphql.FieldConfigArgument {
 				"lastpay_index": &graphql.ArgumentConfig {
 					Type: graphql.Int,
@@ -169,7 +169,23 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_waitanyinvoice, authLevels, p)
 			},
 		},
+
+                "waitinvoice": &graphql.Field {
+			Type:  completedInvoiceType,
+			Description: "wait for an invoice specified by a label to be paid",
+			Args: graphql.FieldConfigArgument {
+				"label": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "wait for the invoice with this label to be paid",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_waitinvoice, authLevels, p)
+			},
+		},
 	}
+
 	mutationFields := graphql.Fields {
 		"connect": &graphql.Field {
 			Type: graphql.String,

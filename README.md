@@ -34,3 +34,4 @@ Supported c-lightning commands:
 9. listpeers
 10. pay
 11. waitanyinvoice
+12. waitinvoice
