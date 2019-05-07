@@ -18,8 +18,32 @@ func r_connect(p graphql.ResolveParams) (interface{}, error) {
 	var port uint = uint(p.Args["port"].(int))
 	l := global.GetGlobalLightning()
 	idReturned, err = l.Connect(id, host, port)
+	if err != nil {
+		err = errors.Wrap(err, "failed to connect to " + host + ":" + string(port))
+		return nil, err
+	}
 	return idReturned, err
 }
+//connect ^^
+
+
+//decodepay
+func r_decodepay(p graphql.ResolveParams) (interface{}, error) {
+        var err error
+	var bolt11 string = p.Args["bolt11"].(string)
+	var description string = p.Args["description"].(string)
+	var ptrDecoded *glightning.DecodedBolt11
+	var decoded_ql DecodedBolt11_ql
+	l := global.GetGlobalLightning()
+	ptrDecoded, err = l.DecodePay(bolt11, description)
+	if err != nil {
+		err = errors.Wrap(err, "failed to decodeBolt11: " + bolt11)
+		return nil, err
+	}
+	decoded_ql = decodedBolt11Toql(*ptrDecoded)
+	return decoded_ql, err
+}
+//decodepay ^^
 
 
 //delinvoice

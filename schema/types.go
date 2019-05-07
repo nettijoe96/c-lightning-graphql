@@ -5,6 +5,108 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+
+//decodepay
+var decodedBolt11Type = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "DecodedBolt11",
+		Fields: graphql.Fields {
+			"currency": &graphql.Field {
+				Type: graphql.String,
+			},
+			"createAt": &graphql.Field {
+				Type: graphql.String,
+			},
+			"expiry": &graphql.Field {
+				Type: graphql.String,
+			},
+			"payee": &graphql.Field {
+				Type: graphql.String,
+			},
+			"millisatoshis": &graphql.Field {
+				Type: graphql.String,
+			},
+			"description": &graphql.Field {
+				Type: graphql.String,
+			},
+			"descriptionHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"minFinalCltvExpiry": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"fallbacks": &graphql.Field {
+				Type: graphql.NewList(fallbackType),
+			},
+			"routes": &graphql.Field {
+				Type: graphql.NewList(graphql.NewList(boltRouteType)),
+			},
+			"extra": &graphql.Field {
+				Type: graphql.NewList(boltExtraType),
+			},
+			"paymentHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"signature": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+var fallbackType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "Fallback",
+		Fields: graphql.Fields {
+			"type": &graphql.Field {
+				Type: graphql.String,
+			},
+			"address": &graphql.Field {
+				Type: graphql.String,
+			},
+			"hex": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+var boltRouteType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "BoltRoute",
+		Fields: graphql.Fields {
+			"pubkey": &graphql.Field {
+				Type: graphql.String,
+			},
+			"shortChannelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"feeBaseMilliSatoshis": &graphql.Field {
+				Type: graphql.String,
+			},
+			"feeProportionalMillionths": &graphql.Field {
+				Type: graphql.String,
+			},
+			"cltvExpiryDelta": &graphql.Field {
+				Type: graphql.Int,
+			},
+		},
+	},
+)
+var boltExtraType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "BoltExtra",
+		Fields: graphql.Fields {
+			"tag": &graphql.Field {
+				Type: graphql.String,
+			},
+			"data": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+//decodepay ^^
+
+
 //feerates
 var feeRateEstimateType = graphql.NewObject(
 	graphql.ObjectConfig{

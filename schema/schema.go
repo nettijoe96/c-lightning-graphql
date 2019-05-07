@@ -9,6 +9,25 @@ import (
 
 func BuildSchema() graphql.Schema {
 	queryFields := graphql.Fields {
+		"decodepay": &graphql.Field {
+			Type: decodedBolt11Type,
+			Description: "decode bolt 11 into its components. If description param is provided, make sure bolt11.descriptionhash = hash(description)",
+			Args: graphql.FieldConfigArgument {
+				"bolt11": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "bolt11 invoice string",
+				},
+				"description": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "description if description hash is provided in bolt",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_decodepay, authLevels, p)
+			},
+		},
 		"feerates": &graphql.Field {
 			Type: feeRateEstimateType,
 			Description: "Return feerate estimates, either satoshi-per-kw ({style} perkw) or satoshi-per-kb ({style} perkb).",

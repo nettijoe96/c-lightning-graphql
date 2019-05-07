@@ -24,14 +24,15 @@ Some api calls are protected under Json Web Token authentification. [jwt-factory
 
 Supported c-lightning commands:
 1. connect
-2. delinvoice
-3. feerates
-4. getinfo
-5. getroute
-6. invoice
-7. listchannels
-8. listnodes
-9. listpeers
-10. pay
-11. waitanyinvoice
-12. waitinvoice
+2. decodepay
+3. delinvoice
+4. feerates
+5. getinfo
+6. getroute
+7. invoice
+8. listchannels
+9. listnodes
+10. listpeers
+11. pay
+12. waitanyinvoice
+13. waitinvoice

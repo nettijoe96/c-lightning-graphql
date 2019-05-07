@@ -7,6 +7,41 @@ import (
         "strconv"
 )
 
+//decodepay 
+func decodedBolt11Toql(d glightning.DecodedBolt11) DecodedBolt11_ql {
+        var ql DecodedBolt11_ql
+	ql.Currency = d.Currency
+	ql.CreatedAt = strconv.FormatUint(d.CreatedAt, 10)
+	ql.Expiry = strconv.FormatUint(d.Expiry, 10)
+	ql.Payee = d.Payee
+	ql.MilliSatoshis = strconv.FormatUint(d.MilliSatoshis, 10)
+	ql.Description = d.Description
+	ql.DescriptionHash = d.DescriptionHash
+	ql.Fallbacks = d.Fallbacks
+	var lstRoutes []BoltRoute_ql
+	for _, rs := range d.Routes {
+	        lstRoutes = make([]BoltRoute_ql, 0)
+		for _, r := range rs {
+	                lstRoutes = append(lstRoutes, boltRouteToql(r))
+		}
+		ql.Routes = append(ql.Routes, lstRoutes)
+	}
+	ql.Extra = d.Extra
+	ql.PaymentHash = d.PaymentHash
+	ql.Signature = d.Signature
+	return ql
+}
+func boltRouteToql(r glightning.BoltRoute) BoltRoute_ql {
+        var ql BoltRoute_ql
+	ql.Pubkey = r.Pubkey
+	ql.ShortChannelId = r.ShortChannelId
+	ql.FeeBaseMilliSatoshis = strconv.FormatUint(r.FeeBaseMilliSatoshis, 10)
+	ql.FeeProportionalMillionths = strconv.FormatUint(r.FeeProportionalMillionths, 10)
+	ql.CltvExpiryDelta = r.CltvExpiryDelta
+	return ql
+}
+//decodepay ^^
+
 //feerates
 func feeRateEstimateToql(feeRateEstimate glightning.FeeRateEstimate) FeeRateEstimate_ql {
 	var ql FeeRateEstimate_ql

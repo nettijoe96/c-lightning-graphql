@@ -4,6 +4,32 @@ import (
 	"github.com/niftynei/glightning/glightning"
 )
 
+//decodepay
+type DecodedBolt11_ql struct {
+	Currency           string        `json:"currency"`
+	CreatedAt          string        `json:"created_at"`//uint64
+	Expiry             string        `json:"expiry"` //uint64
+	Payee              string        `json:"payee"`
+	MilliSatoshis      string        `json:"msatoshi"` //uint64
+	Description        string        `json:"description"`
+	DescriptionHash    string        `json:"description_hash"`
+	MinFinalCltvExpiry int           `json:"min_final_cltv_expiry"`
+	Fallbacks          []glightning.Fallback    `json:"fallbacks"`
+	Routes             [][]BoltRoute_ql `json:"routes"`
+	Extra              []glightning.BoltExtra   `json:"extra"`
+	PaymentHash        string        `json:"payment_hash"`
+	Signature          string        `json:"signature"`
+}
+
+type BoltRoute_ql struct {
+	Pubkey                    string `json:"pubkey"`
+	ShortChannelId            string `json:"short_channel_id"`
+	FeeBaseMilliSatoshis      string `json:"fee_base_msat"` //uint64
+	FeeProportionalMillionths string `json:"fee_proportional_millionths"` //uint64
+	CltvExpiryDelta           uint   `json:"cltv_expiry_delta"`
+}
+//decodepay ^^
+
 //feerates
 type FeeRateEstimate_ql struct {
 	Style                      FeeRateStyle_ql
