@@ -171,6 +171,24 @@ type PaymentFields_ql struct {
 
 
 
+//waitanyinvoice
+type CompletedInvoice_ql struct {
+	Label                string `json:"label"`
+	Bolt11               string `json:"bolt11"`
+	PaymentHash          string `json:"payment_hash"`
+	Status               string `json:"status"`
+	Description          string `json:"description"`
+	PayIndex             int    `json:"pay_index"`
+	MilliSatoshi         string `json:"msatoshi"` //uint64
+	MilliSatoshiReceived string `json:"msatoshi_received"` //uint64
+	PaidAt               string `json:"paid_at"` //uint64
+	ExpiresAt            string `json:"expires_at"` //uint64
+}
+//waitanyinvoice ^^
+
+
+
+
 type PayRequest_ql struct {
 	Bolt11         string
 	MilliSatoshi   string  // uint64

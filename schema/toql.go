@@ -228,3 +228,20 @@ func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
 //pay ^^
 
 
+//waitanyinvoice
+func completedInvoiceToql(i glightning.CompletedInvoice) CompletedInvoice_ql {
+        var ql CompletedInvoice_ql
+	ql.Label = i.Label
+	ql.Bolt11 = i.Bolt11
+	ql.PaymentHash = i.PaymentHash
+	ql.Status = i.Status
+	ql.Description = i.Description
+	ql.PayIndex = i.PayIndex
+	ql.MilliSatoshi = strconv.FormatUint(i.MilliSatoshi, 10)
+	ql.MilliSatoshiReceived = strconv.FormatUint(i.MilliSatoshiReceived, 10)
+	ql.PaidAt = strconv.FormatUint(i.PaidAt, 10)
+	ql.ExpiresAt = strconv.FormatUint(i.ExpiresAt, 10)
+	return ql
+}
+//waitanyinvoice ^^
+

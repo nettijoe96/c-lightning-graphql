@@ -21,3 +21,16 @@ to run (must be already running bitcoind for backend):
 
 Some api calls are protected under Json Web Token authentification. [jwt-factory](https://github.com/nettijoe96/jwt-factory) is needed. You need to use the same cert and keyfile that you created here for jwt-factory (because the cmdline options have the same name)
 
+
+Supported c-lightning commands:
+1. connect
+2. delinvoice
+3. feerates
+4. getinfo
+5. getroute
+6. invoice
+7. listchannels
+8. listnodes
+9. listpeers
+10. pay
+11. waitanyinvoice

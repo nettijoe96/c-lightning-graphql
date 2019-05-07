@@ -608,3 +608,44 @@ var payRequestType = graphql.NewObject(
 	},
 )
 
+
+//waitanyinvoice
+var completedInvoiceType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "completedInvoice",
+		Fields: graphql.Fields {
+			"label": &graphql.Field {
+				Type: graphql.String,
+			},
+			"bolt11": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paymentHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.String,
+			},
+			"description": &graphql.Field {
+				Type: graphql.String,
+			},
+			"payIndex": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiReceived": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paidAt": &graphql.Field {
+				Type: graphql.String,
+			},
+			"expiresAt": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+
+//waitanyinvoice ^^

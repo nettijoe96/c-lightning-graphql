@@ -153,6 +153,22 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_listpeers, authLevels, p)
 			},
 		},
+
+                "waitanyinvoice": &graphql.Field {
+			Type:  completedInvoiceType,
+			Description: "wait for an invoices to be paid",
+			Args: graphql.FieldConfigArgument {
+				"lastpay_index": &graphql.ArgumentConfig {
+					Type: graphql.Int,
+					DefaultValue: 0,
+					Description: "wait for an invoice to be paid after this index if this index is supplied as a param/arg",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_waitanyinvoice, authLevels, p)
+			},
+		},
 	}
 	mutationFields := graphql.Fields {
 		"connect": &graphql.Field {
