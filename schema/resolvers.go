@@ -279,6 +279,32 @@ func r_listnodes(p graphql.ResolveParams) (interface{}, error) {
 }
 
 
+//listnodes
+func r_listpayments(p graphql.ResolveParams) (interface{}, error) {
+	var lstPaymentFields []glightning.PaymentFields
+	var lstPaymentFields_ql []PaymentFields_ql
+        var err error
+        l := global.GetGlobalLightning()
+	var bolt11 string = p.Args["bolt11"].(string)
+	var payment_hash string = p.Args["payment_hash"].(string)
+	if bolt11 != "" && payment_hash != "" {
+		err = errors.New("Cannot include both bolt11 and payment_hash optional args--only 1 or neither.")
+		return nil, err
+	}else if bolt11 != "" && payment_hash == "" {
+                lstPaymentFields, err = l.ListPayments(bolt11)
+	}else if bolt11 == "" && payment_hash != "" {
+                lstPaymentFields, err = l.ListPaymentsHash(payment_hash)
+	}else {
+		lstPaymentFields, err = l.ListPaymentsAll()
+	}
+	for _, pf := range lstPaymentFields {
+		lstPaymentFields_ql = append(lstPaymentFields_ql, paymentFieldsToql(pf))
+	}
+
+        return lstPaymentFields, err
+}
+
+
 //listpeers
 func r_listpeers(p graphql.ResolveParams) (interface{}, error) {
 	var lstPeer []glightning.Peer

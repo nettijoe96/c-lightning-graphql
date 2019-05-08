@@ -33,7 +33,8 @@ Supported c-lightning commands:
 8. invoice
 9. listchannels
 10. listnodes
-11. listpeers
-12. pay
-13. waitanyinvoice
-14. waitinvoice
+11. listpayments
+12. listpeers
+13. pay
+14. waitanyinvoice
+15. waitinvoice

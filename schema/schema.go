@@ -151,6 +151,26 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_listnodes, authLevels, p)
 			},
 		},
+                "listpayments": &graphql.Field {
+			Type:  graphql.NewList(paymentFieldsType),
+			Description: "List payments",
+			Args: graphql.FieldConfigArgument {
+				"bolt11": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "show payment of specific bolt11 invoice",
+				},
+				"payment_hash": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "show payment of specific payment_hash",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listpayments, authLevels, p)
+			},
+		},
 
                 "listpeers": &graphql.Field {
 			Type:  graphql.NewList(peerType),
@@ -335,6 +355,23 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_pay, authLevels, p)
 			},
 		},
+		//ask lisa how the amount is determined when we don't provide satoshis arg
+/*
+		"sendpay": &graphql.Field {
+			Type: sendPayResultType,
+			Description: "send pay without invoice",
+			Args: graphql.FieldConfigArgument {
+				"route": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String), //non null means that argument is required
+					Description: "full bolt11 invoice to pay to",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
+				return auth.AuthWrapper(r_pay, authLevels, p)
+			},
+		},
+*/
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
 	mutations := graphql.ObjectConfig{Name: "Mutation", Fields: mutationFields}
