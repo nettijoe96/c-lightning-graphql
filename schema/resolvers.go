@@ -24,7 +24,6 @@ func r_connect(p graphql.ResolveParams) (interface{}, error) {
 	}
 	return idReturned, err
 }
-//connect ^^
 
 
 //decodepay
@@ -43,7 +42,6 @@ func r_decodepay(p graphql.ResolveParams) (interface{}, error) {
 	decoded_ql = decodedBolt11Toql(*ptrDecoded)
 	return decoded_ql, err
 }
-//decodepay ^^
 
 
 //delinvoice
@@ -62,7 +60,6 @@ func r_delinvoice(p graphql.ResolveParams) (interface{}, error) {
 	invoice_ql = invoiceToql(*ptrInvoice)
 	return invoice_ql, err
 }
-//delinvoice ^^
 
 
 //feerates
@@ -83,6 +80,71 @@ func r_feerates(p graphql.ResolveParams) (interface{}, error) {
 	feeRateEstimate_ql = feeRateEstimateToql(*feeRateEstimate)
 	return feeRateEstimate_ql, err
 }
+
+//fundchannel
+func r_fundchannel(p graphql.ResolveParams) (interface{}, error) {
+	var err error
+	var ptrFundChannelResult *glightning.FundChannelResult
+	var id string = p.Args["id"].(string)
+	var amt uint64
+	amt, err = strconv.ParseUint(p.Args["satoshi"].(string), 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse satoshi param in fundchannel resolver")
+	}
+	var announce bool = p.Args["announce"].(bool)
+	var satoshi glightning.SatoshiAmount
+	satoshi.SendAll = false
+	satoshi.Amount = amt
+	var feerate string = p.Args["feerate"].(string)
+	var feeRate glightning.FeeRate
+	var rate int
+	var directive glightning.FeeDirective
+	if (feerate == "slow" || feerate == "normal" || feerate == "urgent") {
+		if feerate == "slow" {
+			directive = glightning.Slow
+		}else if feerate == "normal" {
+			directive = glightning.Normal
+		}else{
+			directive = glightning.Urgent
+		}
+		feeRate = glightning.FeeRate {
+			Directive: directive,
+		}
+	}else{
+		if len(feerate) <= 5 {
+			err = errors.Wrap(err, "perkb or perkw must be the suffix")
+			return nil, err
+		}else{
+			var strStyle string = feerate[len(feerate)-5:]
+			var strRate string = feerate[0:len(feerate)-5]
+			if rate, err = strconv.Atoi(strRate); err == nil {
+	                        var style FeeRateStyle_ql = FeeRateStyle_ql(strStyle)
+	                        var feeRateStyle glightning.FeeRateStyle
+	                        feeRateStyle, err = qlToFeeRateStyle(style)
+				if err != nil {
+					return nil, errors.Wrap(err, "valid values for fee rate: slow, normal, urgent, <num>perkb, <num>perkw")
+				}
+				feeRate = glightning.FeeRate {
+					Rate: uint(rate),
+					Style: feeRateStyle,
+				}
+			}else{
+			        return nil, errors.Wrap(err, "valid values for fee rate: slow, normal, urgent, <num>perkb, <num>perkw")
+			}
+
+
+		}
+	}
+
+	l := global.GetGlobalLightning()
+	ptrFundChannelResult, err = l.FundChannelExt(id, &satoshi, &feeRate, announce)
+	if err != nil {
+		return nil, errors.Wrap(err, "fundchannel call failed")
+
+	}
+	return *ptrFundChannelResult, err
+}
+
 
 //getinfo
 func r_getinfo(p graphql.ResolveParams) (interface{}, error) {
@@ -267,7 +329,7 @@ func r_pay(p graphql.ResolveParams) (interface{}, error) {
 	return paymentSuccess_ql, err
 }
 
-
+//waitanyinvoice
 func r_waitanyinvoice(p graphql.ResolveParams) (interface{}, error) {
 	var ptrCompletedInvoice *glightning.CompletedInvoice
 	var completedInvoice_ql CompletedInvoice_ql
@@ -284,6 +346,7 @@ func r_waitanyinvoice(p graphql.ResolveParams) (interface{}, error) {
 }
 
 
+//waitinvoice
 func r_waitinvoice(p graphql.ResolveParams) (interface{}, error) {
 	var ptrCompletedInvoice *glightning.CompletedInvoice
 	var completedInvoice_ql CompletedInvoice_ql

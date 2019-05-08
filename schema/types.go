@@ -168,6 +168,26 @@ var onchainEstimateType = graphql.NewObject(
 //feerates ^^
 
 
+//fundchannel 
+var fundChannelResultType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "FundChannelResult",
+		Fields: graphql.Fields {
+			"fundingTx": &graphql.Field {
+				Type: graphql.String,
+			},
+			"fundingTxId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"channelId": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+//fundchannel ^^
+
+
 //getinfo
 var nodeinfoType = graphql.NewObject(
 	graphql.ObjectConfig{

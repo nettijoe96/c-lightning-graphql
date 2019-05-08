@@ -228,8 +228,9 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_connect, authLevels, p)
 			},
 		},
+
 		"delinvoice": &graphql.Field {
-			Type: graphql.String,
+			Type: invoiceType,
 			Description: "delete invoice with label and status as non-optional params",
 			Args: graphql.FieldConfigArgument {
 				"label": &graphql.ArgumentConfig {
@@ -246,6 +247,36 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_delinvoice, authLevels, p)
 			},
 		},
+
+		"fundchannel": &graphql.Field {
+			Type: fundChannelResultType,
+			Description: "fund channel with node {id} for {satoshi} capacity",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "id of node to create channel with",
+				},
+				"satoshi": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "amount of satoshis to fund channel",
+				},
+				"feerate": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "normal",
+					Description: "feerate for channel funding tx onchain. If feerate is set, feestyle must also be set",
+				},
+				"announce": &graphql.ArgumentConfig {
+					Type: graphql.Boolean,
+					DefaultValue: true,
+					Description: "whether to announce channel to the network, making the channel public instead of private",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
+				return auth.AuthWrapper(r_fundchannel, authLevels, p)
+			},
+		},
+
 		"invoice": &graphql.Field {
 			Type: invoiceType,
 			Description: "Create new lightning payment invoice",
