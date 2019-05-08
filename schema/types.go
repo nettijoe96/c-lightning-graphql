@@ -6,6 +6,26 @@ import (
 )
 
 
+//close 
+var closeResultType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "CloseResult",
+		Fields: graphql.Fields {
+			"tx": &graphql.Field {
+				Type: graphql.String,
+			},
+			"txid": &graphql.Field {
+				Type: graphql.String,
+			},
+			"type": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+//close ^^
+
+
 //decodepay
 var decodedBolt11Type = graphql.NewObject(
 	graphql.ObjectConfig{

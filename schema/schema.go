@@ -226,6 +226,31 @@ func BuildSchema() graphql.Schema {
 	}
 
 	mutationFields := graphql.Fields {
+		"close": &graphql.Field {
+			Type: closeResultType,
+			Description: "Close a specific channel based on channel id",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "id of peer of the channel you want to close",
+				},
+				"force": &graphql.ArgumentConfig {
+					Type: graphql.Boolean,
+					DefaultValue: false,
+					Description: "whether or not to close unilaterily. Default is false.",
+				},
+				"timeout": &graphql.ArgumentConfig {
+					Type: graphql.Int,
+					DefaultValue: 30,
+					Description: "time we wait attempting to mutual close before we unilateral close if force=true",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
+				return auth.AuthWrapper(r_close, authLevels, p)
+			},
+		},
+
 		"connect": &graphql.Field {
 			Type: graphql.String,
 			Description: "Connect to {id} at {host}:{port}",

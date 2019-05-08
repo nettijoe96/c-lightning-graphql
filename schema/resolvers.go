@@ -9,6 +9,23 @@ import (
 )
 
 
+//close
+func r_close(p graphql.ResolveParams) (interface{}, error) {
+	var err error
+	var ptrCloseResult *glightning.CloseResult
+	var id string = p.Args["id"].(string)
+	var force bool = p.Args["force"].(bool)
+	var timeout uint = uint(p.Args["timeout"].(int))
+	l := global.GetGlobalLightning()
+	ptrCloseResult, err = l.Close(id, force, timeout)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to close channel with id " + id)
+	}
+	return *ptrCloseResult, err
+
+}
+
+
 //connect
 func r_connect(p graphql.ResolveParams) (interface{}, error) {
 	var err error
