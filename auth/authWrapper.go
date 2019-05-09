@@ -37,6 +37,7 @@ func AuthWrapper(resolver ResolverFunc, authLevels []AuthLevel, p graphql.Resolv
 	var err, e error
 	var pub *rsa.PublicKey
 	var containsToken bool = p.Context.Value("token") != nil
+	isAuth = false
         if len(authLevels) == 1 && authLevels[0] == NoAuth {
 		isAuth = true
 	}else if containsToken {
@@ -60,13 +61,16 @@ func AuthWrapper(resolver ResolverFunc, authLevels []AuthLevel, p graphql.Resolv
 		                for _, authLevel := range authLevels {
 		                        hasPrivilege, e = checkPrivilege(authLevel, token)
 				        if e != nil {
-					        err = errors.Wrap(err, e.Error())
+		                                return nil, errors.Wrap(e, "failure in checkPrivilege")
 				        }
 					if hasPrivilege {
 						isAuth = true
 						break
 					}
 			        }
+				if !isAuth {
+					err = errors.New("required privilege not in token")
+				}
 			}
                 }
 	}else{
@@ -87,7 +91,7 @@ func checkTimestamp(token *jwt.Token) bool {
 }
 
 func checkPrivilege(authLevel AuthLevel, token *jwt.Token) (bool, error) {
-	var hasPrivilege bool
+	var hasPrivilege bool = false
 	var err error
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 	        if privileges, ok := claims["privileges"]; ok {
@@ -97,7 +101,6 @@ func checkPrivilege(authLevel AuthLevel, token *jwt.Token) (bool, error) {
 					break
 				}
 			}
-			hasPrivilege = false
 		}else{
 		        err = errors.New("token does not contain privilege claim")
 	        }
@@ -119,7 +122,7 @@ func GetAuthHandler(graphqlHandler http.Handler) http.Handler {
 
 }
 
-func checkTokenSignature(t string, priv *rsa.PublicKey) (*jwt.Token, error) {
+func checkTokenSignature(t string, pub *rsa.PublicKey) (*jwt.Token, error) {
 	if t == "" {
 		return nil, errors.New("Token is not present")
 	}
@@ -129,7 +132,7 @@ func checkTokenSignature(t string, priv *rsa.PublicKey) (*jwt.Token, error) {
 		        return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 	        }
 
-		return priv, nil
+		return pub, nil
 		})
 	return token, err
 }
