@@ -19,12 +19,17 @@ type ResolverFunc func(p graphql.ResolveParams) (interface{}, error)
 type AuthLevel string
 
 const (
-	NoAuth AuthLevel = "noauth"
-	Funds = "funds"
-	Peers = "peers"
-	Invoices = "invoices"
+	NoAuth AuthLevel = "noauth" //the noauth string is not expected to be in a token. The rest of the levels are expected to be in a token
+	Close = "graphql-close"
+	Connect = "graphql-connect"
+	Delinvoice = "graphql-delinvoice"
+	Fundchannel = "graphql-fundchannel"
+	Invoice = "graphql-invoice"
+	Pay = "graphql-pay"
+	Admin = "graphql-admin" //access to all commands
 )
 
+/* if token has at least 1 of the authlevels, it is authentificated to execute the command */
 func AuthWrapper(resolver ResolverFunc, authLevels []AuthLevel, p graphql.ResolveParams) (interface{}, error) {
 	var isAuth, hasPrivilege, isNotExpired bool
 	var rawToken, certfile string
@@ -54,14 +59,13 @@ func AuthWrapper(resolver ResolverFunc, authLevels []AuthLevel, p graphql.Resolv
 		        }else{
 		                for _, authLevel := range authLevels {
 		                        hasPrivilege, e = checkPrivilege(authLevel, token)
-				        if !hasPrivilege || e != nil {
+				        if e != nil {
 					        err = errors.Wrap(err, e.Error())
 				        }
-			        }
-			        if err == nil {
-				        isAuth = true
-			        }else {
-				        isAuth = false
+					if hasPrivilege {
+						isAuth = true
+						break
+					}
 			        }
 			}
                 }
@@ -87,7 +91,6 @@ func checkPrivilege(authLevel AuthLevel, token *jwt.Token) (bool, error) {
 	var err error
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 	        if privileges, ok := claims["privileges"]; ok {
-			//privileges = strings.Split(strPrivileges.(string), ",")
 			for _, p := range privileges.([]interface{}) {
 				if string(authLevel) == p.(string) {
 					hasPrivilege = true
@@ -95,7 +98,6 @@ func checkPrivilege(authLevel AuthLevel, token *jwt.Token) (bool, error) {
 				}
 			}
 			hasPrivilege = false
-			err = errors.New("does not contain privilege " + string(authLevel))
 		}else{
 		        err = errors.New("token does not contain privilege claim")
 	        }

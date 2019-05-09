@@ -246,7 +246,7 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Close, auth.Admin}
 				return auth.AuthWrapper(r_close, authLevels, p)
 			},
 		},
@@ -269,7 +269,7 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Peers}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Connect, auth.Admin}
 				return auth.AuthWrapper(r_connect, authLevels, p)
 			},
 		},
@@ -288,7 +288,7 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Invoices}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Delinvoice, auth.Admin}
 				return auth.AuthWrapper(r_delinvoice, authLevels, p)
 			},
 		},
@@ -317,7 +317,7 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Fundchannel, auth.Admin}
 				return auth.AuthWrapper(r_fundchannel, authLevels, p)
 			},
 		},
@@ -362,7 +362,7 @@ func BuildSchema() graphql.Schema {
 
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Invoices}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Invoice, auth.Admin}
 				return auth.AuthWrapper(r_invoice, authLevels, p)
 			},
 		},
@@ -376,7 +376,7 @@ func BuildSchema() graphql.Schema {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Pay, auth.Admin}
 				return auth.AuthWrapper(r_pay, authLevels, p)
 			},
 		},

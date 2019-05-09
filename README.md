@@ -33,9 +33,10 @@ Supported c-lightning commands:
 8. getroute
 9. invoice
 10. listchannels
-11. listnodes
-12. listpayments
-13. listpeers
-14. pay
-15. waitanyinvoice
-16. waitinvoice
+11. listinvoices
+12. listnodes
+13. listpayments
+14. listpeers
+15. pay
+16. waitanyinvoice
+17. waitinvoice
