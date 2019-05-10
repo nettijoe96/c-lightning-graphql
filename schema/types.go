@@ -254,6 +254,7 @@ var nodeinfoType = graphql.NewObject(
 )
 //getinfo ^^
 
+
 //getroute
 var routeHopType = graphql.NewObject(
 	graphql.ObjectConfig {
@@ -326,6 +327,34 @@ var channelType = graphql.NewObject(
 )
 //listchannels ^^
 
+
+//listforwards
+var forwardingType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "forwardingType",
+		Fields: graphql.Fields {
+			"inChannel": &graphql.Field {
+				Type: graphql.String,
+			},
+			"outChannel": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiIn": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiOut": &graphql.Field {
+				Type: graphql.String,
+			},
+			"fee": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+//listforwards ^^
 
 //listfunds
 var fundsResultType = graphql.NewObject(

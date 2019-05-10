@@ -133,6 +133,20 @@ func channelToql(channel glightning.Channel) Channel_ql {
 //listchannels ^^
 
 
+//listfowards
+func forwardingToql(f glightning.Forwarding) Forwarding_ql {
+	var ql Forwarding_ql
+	ql.InChannel = f.InChannel
+	ql.OutChannel = f.OutChannel
+	ql.MilliSatoshiIn = strconv.FormatUint(f.MilliSatoshiIn, 10)
+	ql.MilliSatoshiOut = strconv.FormatUint(f.MilliSatoshiOut, 10)
+	ql.Fee = strconv.FormatUint(f.Fee, 10)
+	ql.Status = f.Status
+	return ql
+}
+//listfowards ^^
+
+
 //listfunds
 func fundsResultToql(fr glightning.FundsResult) FundsResult_ql {
         var ql FundsResult_ql

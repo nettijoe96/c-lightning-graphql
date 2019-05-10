@@ -66,6 +66,14 @@ type Channel_ql struct {
 }
 //listchannels ^^
 
+type Forwarding_ql struct {
+	InChannel       string `json:"in_channel"`
+	OutChannel      string `json:"out_channel"`
+	MilliSatoshiIn  string `json:"in_msatoshi"` //uint64
+	MilliSatoshiOut string `json:"out_msatoshi"` //uint64
+	Fee             string `json:"fee"` //uint64
+	Status          string `json:"status"`
+}
 
 //listfunds
 type FundsResult_ql struct {

@@ -99,6 +99,7 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_getroute, authLevels, p)
 			},
 		},
+
 		"listchannels": &graphql.Field {
 			Type: graphql.NewList(channelType),
 			Description: "List channels",
@@ -117,6 +118,15 @@ func BuildSchema() graphql.Schema {
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
 				return auth.AuthWrapper(r_listchannels, authLevels, p)
+			},
+		},
+
+		"listforwards": &graphql.Field {
+			Type: graphql.NewList(forwardingType),
+			Description: "List funds",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listforwards, authLevels, p)
 			},
 		},
 

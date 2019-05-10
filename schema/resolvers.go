@@ -287,6 +287,24 @@ func r_listchannels(p graphql.ResolveParams) (interface{}, error) {
 //listchannels ^^
 
 
+//listfowards
+func r_listforwards(p graphql.ResolveParams) (interface{}, error) {
+        var forwarding []glightning.Forwarding
+	var forwarding_ql []Forwarding_ql
+	var err error
+	l := global.GetGlobalLightning()
+	forwarding, err = l.ListForwards()
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range forwarding {
+		forwarding_ql = append(forwarding_ql, forwardingToql(f))
+	}
+	return forwarding_ql, err
+}
+//listforwards ^^
+
+
 //listfunds
 func r_listfunds(p graphql.ResolveParams) (interface{}, error) {
         var ptrFundsResult *glightning.FundsResult
