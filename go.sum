@@ -6,6 +6,8 @@ github.com/graphql-go/handler v0.2.3 h1:CANh8WPnl5M9uA25c2GBhPqJhE53Fg0Iue/fRNla
 github.com/graphql-go/handler v0.2.3/go.mod h1:leLF6RpV5uZMN1CdImAxuiayrYYhOk33bZciaUGaXeU=
 github.com/kabukky/httpscerts v0.0.0-20150320125433-617593d7dcb3 h1:Iy7Ifq2ysilWU4QlCx/97OoI4xT1IV7i8byT/EyIT/M=
 github.com/kabukky/httpscerts v0.0.0-20150320125433-617593d7dcb3/go.mod h1:BYpt4ufZiIGv2nXn4gMxnfKV306n3mWXgNu/d2TqdTU=
+github.com/nettijoe96/glightning v0.0.0-20190509222758-02e938592e22 h1:muVw7ihbGM5yKlHKHaZkQlqfmPv5olXl3I0MKVylQ74=
+github.com/nettijoe96/glightning v0.0.0-20190509222758-02e938592e22/go.mod h1:iJxnbHEzf+MZtwmVCdTPIUKSNZe8wY78yRhAbFnkPuY=
 github.com/niftynei/glightning v0.0.0-20190331052231-45de0550b80a h1:dBrDfm1oNcWfU184sJnuk9DffBXGR4dKH7sBbq8+XDk=
 github.com/niftynei/glightning v0.0.0-20190331052231-45de0550b80a/go.mod h1:nOHtsM1ZfMwOxwl6LE72U611ozP+IBj/xVkJ+9vwtd4=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=

@@ -1,9 +1,11 @@
 package schema
 
 import (
+	"encoding/json"
+	"log"
 	"github.com/graphql-go/graphql"
 	"github.com/nettijoe96/c-lightning-graphql/global"
-	"github.com/niftynei/glightning/glightning"
+	"github.com/nettijoe96/glightning/glightning"
 	"github.com/pkg/errors"
 	"strconv"
 )
@@ -198,6 +200,17 @@ func r_getroute(p graphql.ResolveParams) (interface{}, error) {
 	for _, h := range hops {
 		hops_ql = append(hops_ql, routeHopToql(h))
 	}
+	//TODO save in usefulshit and remove from here
+	var j []byte
+	var sj string
+	j, err = json.Marshal(hops)
+	sj = string(j)
+	if err != nil {
+		log.Fatal("error in Marshalling")
+	}else {
+		log.Println(sj)
+	}
+	//TODO save in usefulshit and remove from here
 	return hops_ql, err
 }
 //getroute^^
@@ -257,6 +270,22 @@ func r_listchannels(p graphql.ResolveParams) (interface{}, error) {
 	return channels_ql, err
 }
 //listchannels ^^
+
+
+//listfunds
+func r_listfunds(p graphql.ResolveParams) (interface{}, error) {
+        var ptrFundsResult *glightning.FundsResult
+	var fundsResult_ql FundsResult_ql
+	var err error
+	l := global.GetGlobalLightning()
+	ptrFundsResult, err = l.ListFunds()
+	if err != nil {
+		return nil, err
+	}
+	fundsResult_ql = fundsResultToql(*ptrFundsResult)
+	return fundsResult_ql, err
+}
+//listfunds ^^
 
 
 //listinvoices
@@ -371,6 +400,44 @@ func r_pay(p graphql.ResolveParams) (interface{}, error) {
 	paymentSuccess_ql = paymentSuccessToql(*paymentSuccess)
 	return paymentSuccess_ql, err
 }
+
+
+//sendpay
+func r_sendpay(p graphql.ResolveParams) (interface{}, error) {
+	var err error
+	var ptrSendPayResult *glightning.SendPayResult
+	var sendPayResult_ql SendPayResult_ql
+        var strRoute string = p.Args["route"].(string)
+	var getroute Getroute_ql
+	var route glightning.Route
+	err = json.Unmarshal([]byte(strRoute), &getroute)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(getroute)
+	var payment_hash string = p.Args["payment_hash"].(string)
+	var label string = p.Args["label"].(string)
+	var msatoshi uint64
+	msatoshi, err = strconv.ParseUint(p.Args["msatoshi"].(string), 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	var bolt11 string = p.Args["bolt11"].(string)
+	route, err = qlToRoute(getroute)
+	if err != nil {
+		return nil, err
+	}
+	l := global.GetGlobalLightning()
+	ptrSendPayResult, err = l.SendPay(route.Hops, payment_hash, label, msatoshi, bolt11)
+	if err != nil {
+		return nil, err
+	}
+	sendPayResult_ql = sendPayResultToql(*ptrSendPayResult)
+	return sendPayResult_ql, err
+
+
+}
+
 
 //waitanyinvoice
 func r_waitanyinvoice(p graphql.ResolveParams) (interface{}, error) {

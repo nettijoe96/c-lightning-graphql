@@ -120,6 +120,16 @@ func BuildSchema() graphql.Schema {
 			},
 		},
 
+		"listfunds": &graphql.Field {
+			Type: fundsResultType,
+			Description: "List funds",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.NoAuth}
+				return auth.AuthWrapper(r_listfunds, authLevels, p)
+			},
+		},
+
+
 		"listinvoices": &graphql.Field {
 			Type: graphql.NewList(invoiceType),
 			Description: "List invoices",
@@ -380,23 +390,40 @@ func BuildSchema() graphql.Schema {
 				return auth.AuthWrapper(r_pay, authLevels, p)
 			},
 		},
-		//ask lisa how the amount is determined when we don't provide satoshis arg
-/*
+
 		"sendpay": &graphql.Field {
 			Type: sendPayResultType,
 			Description: "send pay without invoice",
 			Args: graphql.FieldConfigArgument {
 				"route": &graphql.ArgumentConfig {
-					Type: graphql.NewNonNull(graphql.String), //non null means that argument is required
-					Description: "full bolt11 invoice to pay to",
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "route to destination",
+				},
+				"payment_hash": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "payment_hash of htlcs",
+				},
+				"label": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "label of the payment",
+				},
+				"msatoshi": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "0",
+					Description: "satoshis to pay",
+				},
+				"bolt11": &graphql.ArgumentConfig {
+					Type: graphql.String,
+					DefaultValue: "",
+					Description: "pay to bolt11 invoice",
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Funds}
-				return auth.AuthWrapper(r_pay, authLevels, p)
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.SendPay, auth.Admin}
+				return auth.AuthWrapper(r_sendpay, authLevels, p)
 			},
 		},
-*/
 	}
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
 	mutations := graphql.ObjectConfig{Name: "Mutation", Fields: mutationFields}

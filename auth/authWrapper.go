@@ -26,6 +26,7 @@ const (
 	Fundchannel = "graphql-fundchannel"
 	Invoice = "graphql-invoice"
 	Pay = "graphql-pay"
+	SendPay = "graphql-sendpay"
 	Admin = "graphql-admin" //access to all commands
 )
 

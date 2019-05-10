@@ -1,7 +1,7 @@
 package global
 
 import (
-	"github.com/niftynei/glightning/glightning"
+	"github.com/nettijoe96/glightning/glightning"
 )
 
 var lightning *glightning.Lightning = glightning.NewLightning()

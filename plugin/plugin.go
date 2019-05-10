@@ -7,7 +7,7 @@ import (
 	"github.com/nettijoe96/c-lightning-graphql/auth"
 	"github.com/nettijoe96/c-lightning-graphql/global"
 	"github.com/nettijoe96/c-lightning-graphql/schema"
-	"github.com/niftynei/glightning/glightning"
+	"github.com/nettijoe96/glightning/glightning"
 	"github.com/niftynei/glightning/jrpc2"
 	"log"
 	"net/http"

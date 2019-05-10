@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/niftynei/glightning/glightning"
+	"github.com/nettijoe96/glightning/glightning"
 )
 
 //decodepay
@@ -65,6 +65,29 @@ type Channel_ql struct {
 	Delay               uint   `json:"delay"`
 }
 //listchannels ^^
+
+
+//listfunds
+type FundsResult_ql struct {
+	Outputs  []*FundOutput_ql     `json:"outputs"`
+	Channels []*FundingChannel_ql `json:"channels"`
+}
+type FundOutput_ql struct {
+	TxId    string `json:"txid"`
+	Output  int    `json:"output"`
+	Value   string `json:"value"` //uint64
+	Address string `json:"address"`
+	Status  string `json:"status"`
+}
+type FundingChannel_ql struct {
+	Id                  string `json:"peer_id"`
+	ShortChannelId      string `json:"short_channel_id"`
+	ChannelSatoshi      string `json:"channel_sat"` //uint64
+	ChannelTotalSatoshi string `json:"channel_total_sat"` //uint64
+	FundingTxId         string `json:"funding_txid"`
+}
+//listfunds ^^
+
 
 //listinvoices
 type Invoice_ql struct {
@@ -159,7 +182,7 @@ type Htlc_ql struct {
 
 //pay
 type PaymentSuccess_ql struct {
-	PaymentFields PaymentFields_ql
+	PaymentFields_ql
 	GetRouteTries int          `json:"getroute_tries"`
 	SendPayTries  int          `json:"sendpay_tries"`
 	Route         []RouteHop_ql   `json:"route"`
@@ -196,6 +219,19 @@ type PaymentFields_ql struct {
 //pay ^^
 
 
+//sendpay
+type SendPayResult_ql struct {
+	Message string
+	PaymentFields_ql
+}
+//this getroute_ql struct is used because getroute returns to graphql with getroute has the first key
+type Getroute_ql struct {
+	Getroute []RouteHop_ql
+}
+type Route_ql struct {
+	Hops []RouteHop_ql
+}
+//sendpay^^
 
 //waitanyinvoice
 type CompletedInvoice_ql struct {

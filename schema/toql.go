@@ -2,7 +2,7 @@ package schema
 
 
 import (
-        "github.com/niftynei/glightning/glightning"
+        "github.com/nettijoe96/glightning/glightning"
 	"github.com/pkg/errors"
         "strconv"
 )
@@ -133,6 +133,40 @@ func channelToql(channel glightning.Channel) Channel_ql {
 //listchannels ^^
 
 
+//listfunds
+func fundsResultToql(fr glightning.FundsResult) FundsResult_ql {
+        var ql FundsResult_ql
+	for _, output := range fr.Outputs {
+		var fo FundOutput_ql = fundOutputToql(*output)
+		ql.Outputs = append(ql.Outputs, &fo)
+	}
+	for _, channel := range fr.Channels {
+		var fc FundingChannel_ql = fundingChannelToql(*channel)
+		ql.Channels = append(ql.Channels, &fc)
+	}
+	return ql
+}
+func fundOutputToql(fo glightning.FundOutput) FundOutput_ql {
+	var ql FundOutput_ql
+	ql.TxId = fo.TxId
+	ql.Output = fo.Output
+	ql.Value = strconv.FormatUint(fo.Value, 10)
+	ql.Address = fo.Address
+	ql.Status = fo.Status
+	return ql
+}
+func fundingChannelToql(fc glightning.FundingChannel) FundingChannel_ql {
+	var ql FundingChannel_ql
+	ql.Id = fc.Id
+	ql.ShortChannelId = fc.ShortChannelId
+	ql.ChannelSatoshi = strconv.FormatUint(fc.ChannelSatoshi, 10)
+	ql.ChannelTotalSatoshi = strconv.FormatUint(fc.ChannelTotalSatoshi, 10)
+	ql.FundingTxId = fc.FundingTxId
+	return ql
+}
+//listfunds
+
+
 //listinvoices
 func invoiceToql(invoice glightning.Invoice) Invoice_ql {
 	var ql Invoice_ql
@@ -221,7 +255,15 @@ func htlcToql(htlc *glightning.Htlc) Htlc_ql {
 //pay
 func paymentSuccessToql(paymentSuccess glightning.PaymentSuccess) PaymentSuccess_ql {
         var ql PaymentSuccess_ql
-	ql.PaymentFields = paymentFieldsToql(paymentSuccess.PaymentFields)
+	ql.Id = strconv.FormatUint(paymentSuccess.Id, 10)
+	ql.PaymentHash = paymentSuccess.PaymentHash
+	ql.Destination = paymentSuccess.Destination
+	ql.MilliSatoshi = strconv.FormatUint(paymentSuccess.MilliSatoshi, 10)
+	ql.MilliSatoshiSent = strconv.FormatUint(paymentSuccess.MilliSatoshiSent, 10)
+	ql.CreatedAt = strconv.FormatUint(paymentSuccess.CreatedAt, 10)
+	ql.Status = paymentSuccess.Status
+	ql.PaymentPreimage = paymentSuccess.PaymentPreimage
+	ql.Description = paymentSuccess.Description
 	ql.GetRouteTries = paymentSuccess.GetRouteTries
 	ql.SendPayTries = paymentSuccess.SendPayTries
 	for _, routeHop := range paymentSuccess.Route {
@@ -261,6 +303,48 @@ func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
         return ql
 }
 //pay ^^
+
+
+//sendpay
+func sendPayResultToql(r glightning.SendPayResult) SendPayResult_ql {
+	var ql SendPayResult_ql
+	ql.Message = r.Message
+	ql.Id = strconv.FormatUint(r.Id, 10)
+	ql.PaymentHash = r.PaymentHash
+	ql.Destination = r.Destination
+	ql.MilliSatoshi = strconv.FormatUint(r.MilliSatoshi, 10)
+	ql.MilliSatoshiSent = strconv.FormatUint(r.MilliSatoshiSent, 10)
+	ql.CreatedAt = strconv.FormatUint(r.CreatedAt, 10)
+	ql.Status = r.Status
+	ql.PaymentPreimage = r.PaymentPreimage
+	ql.Description = r.Description
+	return ql
+}
+func qlToRoute(ql Getroute_ql) (glightning.Route, error) {
+	var route glightning.Route
+	var h glightning.RouteHop
+	var err error
+	for _, hop := range ql.Getroute {
+	        h, err = qlToRouteHop(hop)
+		if err != nil {
+			return route, err
+		}
+		route.Hops = append(route.Hops, h)
+	}
+	return route, err
+}
+func qlToRouteHop(ql RouteHop_ql) (glightning.RouteHop, error) {
+	var err error
+	var hop glightning.RouteHop
+	hop.Id = ql.Id
+	hop.ShortChannelId = ql.ShortChannelId
+	hop.MilliSatoshi, err = strconv.ParseUint(ql.MilliSatoshi, 10, 64)
+	if err != nil {
+		return hop, err
+	}
+	hop.Delay = ql.Delay
+	return hop, err
+}
 
 
 //waitanyinvoice

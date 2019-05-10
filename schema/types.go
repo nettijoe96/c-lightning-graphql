@@ -268,6 +268,9 @@ var routeHopType = graphql.NewObject(
 			"milliSatoshi": &graphql.Field {
 				Type: graphql.String,
 			},
+			"direction": &graphql.Field {
+				Type: graphql.Int,
+			},
 			"delay": &graphql.Field {
 				Type: graphql.Int,
 			},
@@ -317,6 +320,67 @@ var channelType = graphql.NewObject(
 			},
 			"delay": &graphql.Field {
 				Type: graphql.Int,
+			},
+		},
+	},
+)
+//listchannels ^^
+
+
+//listfunds
+var fundsResultType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "fundsResult",
+		Fields: graphql.Fields {
+			"outputs": &graphql.Field {
+				Type: graphql.NewList(fundOutputType),
+			},
+			"channels": &graphql.Field {
+				Type: graphql.NewList(fundingChannelType),
+			},
+		},
+	},
+)
+var fundOutputType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "channelOutput",
+		Fields: graphql.Fields {
+			"txid": &graphql.Field {
+				Type: graphql.String,
+			},
+			"output": &graphql.Field {
+				Type: graphql.Int,
+			},
+			"value": &graphql.Field {
+				Type: graphql.String,
+			},
+			"address": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+var fundingChannelType = graphql.NewObject(
+	graphql.ObjectConfig {
+		Name: "channelFunding",
+		Fields: graphql.Fields {
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"shortChannelId": &graphql.Field {
+				Type: graphql.String,
+			},
+			"channelSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"channelTotalSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"fundingTxId": &graphql.Field {
+				Type: graphql.String,
 			},
 		},
 	},
@@ -632,8 +696,32 @@ var paymentSuccessType = graphql.NewObject(
 	graphql.ObjectConfig {
 		Name: "paymentSuccess",
 		Fields: graphql.Fields {
-			"paymentFields": &graphql.Field {
-				Type: paymentFieldsType,
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paymentHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"destination": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiSent": &graphql.Field {
+				Type: graphql.String,
+			},
+			"createdAt": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paymentPreimage": &graphql.Field {
+				Type: graphql.String,
+			},
+			"description": &graphql.Field {
+				Type: graphql.String,
 			},
 			"getRouteTries": &graphql.Field {
 				Type: graphql.Int,
@@ -650,6 +738,7 @@ var paymentSuccessType = graphql.NewObject(
 		},
 	},
 )
+/*this type is never used but it's Feilds are used in PaySuccessType and SendPayResult */
 var paymentFieldsType = graphql.NewObject(
 	graphql.ObjectConfig {
 		Name: "paymentFields",
@@ -717,6 +806,46 @@ var payFailureType = graphql.NewObject(
 )
 //pay ^^
 
+
+//sendpay 
+var sendPayResultType = graphql.NewObject(
+	graphql.ObjectConfig {
+	        Name: "sendPay",
+		Fields: graphql.Fields {
+			"message": &graphql.Field {
+				Type: graphql.String,
+			},
+			"id": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paymentHash": &graphql.Field {
+				Type: graphql.String,
+			},
+			"destination": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshi": &graphql.Field {
+				Type: graphql.String,
+			},
+			"milliSatoshiSent": &graphql.Field {
+				Type: graphql.String,
+			},
+			"createdAt": &graphql.Field {
+				Type: graphql.String,
+			},
+			"status": &graphql.Field {
+				Type: graphql.String,
+			},
+			"paymentPreimage": &graphql.Field {
+				Type: graphql.String,
+			},
+			"description": &graphql.Field {
+				Type: graphql.String,
+			},
+		},
+	},
+)
+//sendpay ^^
 
 var payRequestType = graphql.NewObject(
 	graphql.ObjectConfig {
