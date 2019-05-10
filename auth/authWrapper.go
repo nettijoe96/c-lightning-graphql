@@ -23,6 +23,7 @@ const (
 	Close = "graphql-close"
 	Connect = "graphql-connect"
 	Delinvoice = "graphql-delinvoice"
+	Disconnect = "graphql-disconnect"
 	Fundchannel = "graphql-fundchannel"
 	Invoice = "graphql-invoice"
 	Pay = "graphql-pay"

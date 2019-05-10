@@ -303,6 +303,26 @@ func BuildSchema() graphql.Schema {
 			},
 		},
 
+		"disconnect": &graphql.Field {
+			Type: graphql.String,
+			Description: "disconnect from peer with {id}",
+			Args: graphql.FieldConfigArgument {
+				"id": &graphql.ArgumentConfig {
+					Type: graphql.NewNonNull(graphql.String),
+					Description: "id of peer",
+				},
+				"force": &graphql.ArgumentConfig {
+					Type: graphql.Boolean,
+					DefaultValue: false,
+					Description: "disconnect from peer even if it is a peer of one of your channels",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Disconnect, auth.Admin}
+				return auth.AuthWrapper(r_disconnect, authLevels, p)
+			},
+		},
+
 		"fundchannel": &graphql.Field {
 			Type: fundChannelResultType,
 			Description: "fund channel with node {id} for {satoshi} capacity",

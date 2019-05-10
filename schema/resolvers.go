@@ -81,6 +81,21 @@ func r_delinvoice(p graphql.ResolveParams) (interface{}, error) {
 }
 
 
+//disconnect
+func r_disconnect(p graphql.ResolveParams) (interface{}, error) {
+	var err error
+	var id string = p.Args["id"].(string)
+	var force bool = p.Args["force"].(bool)
+	l := global.GetGlobalLightning()
+	err = l.Disconnect(id, force)
+	if err != nil {
+		err = errors.Wrap(err, "failed to disconnect from: " + id)
+		return nil, err
+	}
+	return nil, err
+}
+
+
 //feerates
 func r_feerates(p graphql.ResolveParams) (interface{}, error) {
 	var style FeeRateStyle_ql = FeeRateStyle_ql(p.Args["style"].(string))
