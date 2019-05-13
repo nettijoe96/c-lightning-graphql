@@ -767,7 +767,7 @@ var paymentSuccessType = graphql.NewObject(
 		},
 	},
 )
-/*this type is never used but it's Feilds are used in PaySuccessType and SendPayResult */
+/*this type is never used but it's Fields are used in PaySuccessType and SendPayResult */
 var paymentFieldsType = graphql.NewObject(
 	graphql.ObjectConfig {
 		Name: "paymentFields",

@@ -275,7 +275,7 @@ func r_listchannels(p graphql.ResolveParams) (interface{}, error) {
 	}else if scid != "" && source == "" {
 		channels, err = l.GetChannel(scid)
 	}else if source != "" && scid == "" {
-		channels, err = l.ListChannelsBySource(scid)
+		channels, err = l.ListChannelsBySource(source)
 	}else {
 		err = errors.New("cannot specify both scid and source")
 	}
