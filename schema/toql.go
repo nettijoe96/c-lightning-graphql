@@ -269,15 +269,7 @@ func htlcToql(htlc *glightning.Htlc) Htlc_ql {
 //pay
 func paymentSuccessToql(paymentSuccess glightning.PaymentSuccess) PaymentSuccess_ql {
         var ql PaymentSuccess_ql
-	ql.Id = strconv.FormatUint(paymentSuccess.Id, 10)
-	ql.PaymentHash = paymentSuccess.PaymentHash
-	ql.Destination = paymentSuccess.Destination
-	ql.MilliSatoshi = strconv.FormatUint(paymentSuccess.MilliSatoshi, 10)
-	ql.MilliSatoshiSent = strconv.FormatUint(paymentSuccess.MilliSatoshiSent, 10)
-	ql.CreatedAt = strconv.FormatUint(paymentSuccess.CreatedAt, 10)
-	ql.Status = paymentSuccess.Status
-	ql.PaymentPreimage = paymentSuccess.PaymentPreimage
-	ql.Description = paymentSuccess.Description
+	ql.PaymentFields = paymentFieldsToql(paymentSuccess.PaymentFields)
 	ql.GetRouteTries = paymentSuccess.GetRouteTries
 	ql.SendPayTries = paymentSuccess.SendPayTries
 	for _, routeHop := range paymentSuccess.Route {
@@ -323,15 +315,7 @@ func payFailureToql(payFailure glightning.PayFailure) PayFailure_ql {
 func sendPayResultToql(r glightning.SendPayResult) SendPayResult_ql {
 	var ql SendPayResult_ql
 	ql.Message = r.Message
-	ql.Id = strconv.FormatUint(r.Id, 10)
-	ql.PaymentHash = r.PaymentHash
-	ql.Destination = r.Destination
-	ql.MilliSatoshi = strconv.FormatUint(r.MilliSatoshi, 10)
-	ql.MilliSatoshiSent = strconv.FormatUint(r.MilliSatoshiSent, 10)
-	ql.CreatedAt = strconv.FormatUint(r.CreatedAt, 10)
-	ql.Status = r.Status
-	ql.PaymentPreimage = r.PaymentPreimage
-	ql.Description = r.Description
+	ql.PaymentFields = paymentFieldsToql(r.PaymentFields)
 	return ql
 }
 func qlToRoute(ql Getroute_ql) (glightning.Route, error) {

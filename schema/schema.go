@@ -399,13 +399,13 @@ func BuildSchema() graphql.Schema {
 					DefaultValue: false,
 					Description: "exposing channels that are not public to all nodes in the lightning network",
 				},
-
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				var authLevels []auth.AuthLevel = []auth.AuthLevel{auth.Invoice, auth.Admin}
 				return auth.AuthWrapper(r_invoice, authLevels, p)
 			},
 		},
+
 		"pay": &graphql.Field {
 			Type: paymentSuccessType,
 			Description: "Pay via bolt11 as argument",

@@ -190,7 +190,7 @@ type Htlc_ql struct {
 
 //pay
 type PaymentSuccess_ql struct {
-	PaymentFields_ql
+	PaymentFields PaymentFields_ql
 	GetRouteTries int          `json:"getroute_tries"`
 	SendPayTries  int          `json:"sendpay_tries"`
 	Route         []RouteHop_ql   `json:"route"`
@@ -230,7 +230,7 @@ type PaymentFields_ql struct {
 //sendpay
 type SendPayResult_ql struct {
 	Message string
-	PaymentFields_ql
+	PaymentFields PaymentFields_ql
 }
 //this getroute_ql struct is used because getroute returns to graphql with getroute has the first key
 type Getroute_ql struct {

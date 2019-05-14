@@ -215,17 +215,6 @@ func r_getroute(p graphql.ResolveParams) (interface{}, error) {
 	for _, h := range hops {
 		hops_ql = append(hops_ql, routeHopToql(h))
 	}
-	//TODO save in usefulshit and remove from here
-	var j []byte
-	var sj string
-	j, err = json.Marshal(hops)
-	sj = string(j)
-	if err != nil {
-		log.Fatal("error in Marshalling")
-	}else {
-		log.Println(sj)
-	}
-	//TODO save in usefulshit and remove from here
 	return hops_ql, err
 }
 //getroute^^

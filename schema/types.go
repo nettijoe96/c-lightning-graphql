@@ -725,32 +725,8 @@ var paymentSuccessType = graphql.NewObject(
 	graphql.ObjectConfig {
 		Name: "paymentSuccess",
 		Fields: graphql.Fields {
-			"id": &graphql.Field {
-				Type: graphql.String,
-			},
-			"paymentHash": &graphql.Field {
-				Type: graphql.String,
-			},
-			"destination": &graphql.Field {
-				Type: graphql.String,
-			},
-			"milliSatoshi": &graphql.Field {
-				Type: graphql.String,
-			},
-			"milliSatoshiSent": &graphql.Field {
-				Type: graphql.String,
-			},
-			"createdAt": &graphql.Field {
-				Type: graphql.String,
-			},
-			"status": &graphql.Field {
-				Type: graphql.String,
-			},
-			"paymentPreimage": &graphql.Field {
-				Type: graphql.String,
-			},
-			"description": &graphql.Field {
-				Type: graphql.String,
+			"paymentFields": &graphql.Field {
+				Type: paymentFieldsType,
 			},
 			"getRouteTries": &graphql.Field {
 				Type: graphql.Int,
@@ -767,7 +743,6 @@ var paymentSuccessType = graphql.NewObject(
 		},
 	},
 )
-/*this type is never used but it's Fields are used in PaySuccessType and SendPayResult */
 var paymentFieldsType = graphql.NewObject(
 	graphql.ObjectConfig {
 		Name: "paymentFields",
@@ -787,10 +762,10 @@ var paymentFieldsType = graphql.NewObject(
 			"milliSatoshiSent": &graphql.Field {
 				Type: graphql.String,
 			},
-			"CreatedAt": &graphql.Field {
+			"createdAt": &graphql.Field {
 				Type: graphql.String,
 			},
-			"Status": &graphql.Field {
+			"status": &graphql.Field {
 				Type: graphql.String,
 			},
 			"paymentPreimage": &graphql.Field {
@@ -844,32 +819,8 @@ var sendPayResultType = graphql.NewObject(
 			"message": &graphql.Field {
 				Type: graphql.String,
 			},
-			"id": &graphql.Field {
-				Type: graphql.String,
-			},
-			"paymentHash": &graphql.Field {
-				Type: graphql.String,
-			},
-			"destination": &graphql.Field {
-				Type: graphql.String,
-			},
-			"milliSatoshi": &graphql.Field {
-				Type: graphql.String,
-			},
-			"milliSatoshiSent": &graphql.Field {
-				Type: graphql.String,
-			},
-			"createdAt": &graphql.Field {
-				Type: graphql.String,
-			},
-			"status": &graphql.Field {
-				Type: graphql.String,
-			},
-			"paymentPreimage": &graphql.Field {
-				Type: graphql.String,
-			},
-			"description": &graphql.Field {
-				Type: graphql.String,
+			"paymentFields": &graphql.Field {
+				Type: paymentFieldsType,
 			},
 		},
 	},
