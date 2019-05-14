@@ -5,7 +5,7 @@ import (
 	"log"
 	"github.com/graphql-go/graphql"
 	"github.com/nettijoe96/c-lightning-graphql/global"
-	"github.com/nettijoe96/glightning/glightning"
+	"github.com/niftynei/glightning/glightning"
 	"github.com/pkg/errors"
 	"strconv"
 )

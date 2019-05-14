@@ -2,7 +2,7 @@ package schema
 
 
 import (
-        "github.com/nettijoe96/glightning/glightning"
+        "github.com/niftynei/glightning/glightning"
 	"github.com/pkg/errors"
         "strconv"
 )

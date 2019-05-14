@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/nettijoe96/glightning/glightning"
+	"github.com/niftynei/glightning/glightning"
 )
 
 //decodepay
